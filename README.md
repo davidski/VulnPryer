@@ -11,21 +11,30 @@ There is the hard way and the easy way.
 
 ## The hard way
 1. Git clone into your target directory
-2. Install dependencies (DOCUMENTATION PENDING)
-  a. Mongo
-  b. Python 2.7 + several modules
+2. Install dependencies 
+  1. Mongo
+  2. Python 2.7 + several modules
+       1. pandas
+       2. urllib2
+       3. boto
+       4. restkit
+       5. simplejson
+       6. oauth2
+       7. lxml
+       8. pymongo
+       9. filechunkio
 3. Copy `vulnpryer.conf.sample` to `vulnpryer.conf` and modify with your settings and credentials.
-4. Launch `vulnpryer.py`, or run the subcomponents manually:
-  a. vulndb.py
-  b. mongo_loader.py
-  c. trl.py
+4. Launch `vulnpryer.py`, or run the subcomponents manually: 
+  1. vulndb.py
+  2. mongo_loader.py
+  3. trl.py
 
 ### The easy way
-1. Use the chef-vulnpryer cookbook to set up a full stack with all your dependencies resolved.
+1. Use the [chef-vulnpryer](https://github.com/davidski/chef-vulnpryer) cookbook to set up a full stack with all your dependencies resolved.
 
-#Thanks
+#Acknowledgements
 Thanks to @alexcpsec and @kylemaxwell for the 
-{combine)[https://github.com/mlsecproject/combine] project. VulnPryer has cribbed heavily from 
+[combine](https://github.com/mlsecproject/combine) project. VulnPryer has cribbed heavily from 
 that design pattern.
 
 Thanks to Risk Based Security (RBS) for providing the VulnDB product and for the support in 
