@@ -7,29 +7,21 @@ Vulnerability Pryer - It prys more information into/out of your vulnerability da
 Vulnerability Pryer
 
 #Usage
-There is the hard way and the easy way.
+VulnPryer may be set up the hard (manual) way and the easy (automated) way.
 
-## The hard way
-1. Git clone into your target directory
-2. Install dependencies 
-  1. Mongo
-  2. Python 2.7 + several modules
-       1. pandas
-       2. urllib2
-       3. boto
-       4. restkit
-       5. simplejson
-       6. oauth2
-       7. lxml
-       8. pymongo
-       9. filechunkio
-3. Copy `vulnpryer.conf.sample` to `vulnpryer.conf` and modify with your settings and credentials.
-4. Launch `vulnpryer.py`, or run the subcomponents manually: 
+## Manual Installation
+1. Install Mongo running on the localhost
+2. git clone https://github.com/davidski/VulnPryer vulnpryer
+3  cd ./vulnpryer
+4. pip install -r requirements
+5. cp vulnpryer.conf{.sample,}
+6. vi vulnpryer.conf #modify with your settings and credentials.
+7. ./vulnpryer.py #run the subcomponents manually: 
   1. vulndb.py
   2. mongo_loader.py
   3. trl.py
 
-### The easy way
+### Automated Installation
 1. Use the [chef-vulnpryer](https://github.com/davidski/chef-vulnpryer) cookbook to set up a full stack with all your dependencies resolved.
 
 #Acknowledgements
