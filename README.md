@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/davidski/VulnPryer.png)](http://travis-ci.org/davidski/VulnPryer)
+
 VulnPryer
 =========
 
