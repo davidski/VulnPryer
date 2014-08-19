@@ -20,6 +20,7 @@ client = MongoClient(host = mongo_host)
 db = client.vulndb
 collection = db.osvdb
 
+
 def _decode_list(data):
     rv = []
     for item in data:
@@ -36,18 +37,19 @@ def _decode_dict(data):
     rv = {}
     for key, value in data.iteritems():
         if isinstance(key, unicode):
-           key = key.encode('utf-8')
+            key = key.encode('utf-8')
         if isinstance(value, unicode):
-           value = value.encode('utf-8')
+            value = value.encode('utf-8')
         elif isinstance(value, list):
-           value = _decode_list(value)
+            value = _decode_list(value)
         elif isinstance(value, dict):
-           value = _decode_dict(value)
+            value = _decode_dict(value)
         rv[key] = value
     return rv
 
-## load a pattern of JSON files to Mongo
+
 def load_mongo(json_glob_pattern):
+    """Load a pattern of JSON files to Mongo"""
     path_to_json = json_directory + json_glob_pattern
     for filename in glob.glob(path_to_json):
         logging.debug("Wokring on " + filename)
@@ -65,7 +67,7 @@ def load_mongo(json_glob_pattern):
         #osvdb_id = collection.insert(vulndb)
         logging.info("Saved: ", filename, " with MongoDB id: ", osvdb_id)
 
-## Run the Aggregation Query
+
 def _run_aggregation():
     """Set the classifications to a bogus array value if it's empty (size 0)
     this keeps the unwind from dropping empty classification documents
@@ -89,7 +91,8 @@ def _run_aggregation():
             "private_exploit": { "$sum": { "$cond": [
                 { "$eq": [ "$classifications.name", "exploit_private" ] }, 1, 0 ]}}
         }},
-        { "$project": { "_id": 0, "OSVDB": "$_id._id", "CVE_ID": "$_id.CVE_ID", "public_exploit": 1, "private_exploit": 1 } }
+        { "$project": { "_id": 0, "OSVDB": "$_id._id", "CVE_ID": "$_id.CVE_ID", 
+            "public_exploit": 1, "private_exploit": 1 } }
     ])
 
     logging.info("There are {} entries in this aggregation.".format(len(results['result'])))
