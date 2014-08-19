@@ -10,12 +10,12 @@ import ConfigParser
 config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
 
-consumer_key        = config.get('VulnDB', 'consumer_key')
-consumer_secret     = config.get('VulnDB', 'consumer_secret')
-request_token_url   = config.get('VulnDB', 'request_token_url')
-temp_directory      = config.get('VulnDB', 'working_dir')
-json_directory      = config.get('VulnDB', 'json_dir')
-page_size           = int(config.get('VulnDB', 'page_size'))
+consumer_key = config.get('VulnDB', 'consumer_key')
+consumer_secret = config.get('VulnDB', 'consumer_secret')
+request_token_url = config.get('VulnDB', 'request_token_url')
+temp_directory = config.get('VulnDB', 'working_dir')
+json_directory = config.get('VulnDB', 'json_dir')
+page_size = int(config.get('VulnDB', 'page_size'))
 
 
 def _fetch_data(from_date, to_date, page_size=20, first_page=1):
@@ -24,16 +24,15 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
     from_date = from_date.strftime("%Y-%m-%d")
     to_date = to_date.strftime("%Y-%m-%d")
 
-    # url = 'https://vulndb.cyberriskanalytics.com/api/v1/vulnerabilities/96956'
     logging.info("Working on date range: %s - %s" % (from_date, to_date))
 
     consumer = oauth2.Consumer(key=consumer_key, secret=consumer_secret)
-    client = oauth2.Client(consumer)
+    # client = oauth2.Client(consumer)
 
     # now get our request token
     auth = OAuthFilter('*', consumer)
 
-    # initialize the page counter either at the first page or whatever page 
+    # initialize the page counter either at the first page or whatever page
     # was requested
     page_counter = first_page
 
@@ -50,7 +49,7 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
         resp = request(url, filters=[auth])
         if resp.status_int == 404:
             logging.warning("Could not find anything for the week begining: %s"
-                % from_date)
+                            % from_date)
             return
         if resp.status_int != 200:
             raise Exception("Invalid response %s." % resp['status'])
@@ -59,8 +58,8 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
 
         """parse response and append to working set"""
         page_reply = json.loads(resp.body_string())
-        logging.debug("Retrieving page {} of {}.".format(page_counter, 
-            -(-page_reply['total_entries'] // page_size)))
+        logging.debug("Retrieving page {} of {}.".format(page_counter,
+                      -(-page_reply['total_entries'] // page_size)))
 
         if len(page_reply['results']) < page_size:
             finished = True
@@ -97,9 +96,9 @@ def query_vulndb(from_date, to_date, day_interval=1):
         reply = _fetch_data(window_start, window_end, page_size)
 
         with io.open(json_directory + 'data_' + window_start.strftime(
-            "%Y-%m-%d") + '.json', 'w', encoding='utf-8') as f:
-            f.write(unicode(json.dumps(reply, ensure_ascii=False)))
-            f.close
+                     "%Y-%m-%d") + '.json', 'w', encoding='utf-8') as f:
+                    f.write(unicode(json.dumps(reply, ensure_ascii=False)))
+                    f.close
 
 if __name__ == "__main__":
     """Pull in the previous day's events by default"""
