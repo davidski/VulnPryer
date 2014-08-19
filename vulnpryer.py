@@ -22,10 +22,10 @@ def mkdate(datestr):
         return datestr
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-e', '--enddate', type=mkdate, default=from_date, 
-    help="Start date.")
-parser.add_argument('-s', '--startdate', type=mkdate, default=to_date, 
-    help="End date.")
+parser.add_argument('-e', '--enddate', type=mkdate, default=from_date,
+                    help="Start date.")
+parser.add_argument('-s', '--startdate', type=mkdate, default=to_date,
+                    help="End date.")
 args = parser.parse_args()
 
 startstring = args.startdate
@@ -49,5 +49,5 @@ print "Generating modified TRL"
 new_trl_path = modify_trl('/tmp/trl.gz')
 
 print "Posting modified TRL to S3"
-post_trl(new_trl_path, 'analysis.cism.sch', 
-    '/vulndb/data/trl/RedSeal_TRL_modified.gz')
+post_trl(new_trl_path, 'analysis.cism.sch',
+         '/vulndb/data/trl/RedSeal_TRL_modified.gz')

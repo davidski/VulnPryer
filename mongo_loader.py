@@ -11,12 +11,12 @@ import logging
 config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
 
-mongo_host      = config.get('Mongo', 'hostname')
-temp_directory  = config.get('VulnDB', 'working_dir')
-json_directory  = config.get('VulnDB', 'json_dir')
+mongo_host = config.get('Mongo', 'hostname')
+temp_directory = config.get('VulnDB', 'working_dir')
+json_directory = config.get('VulnDB', 'json_dir')
 
-#connect to our MongoDB instance,
-client = MongoClient(host = mongo_host)
+# connect to our MongoDB instance
+client = MongoClient(host=mongo_host)
 db = client.vulndb
 collection = db.osvdb
 
@@ -32,6 +32,7 @@ def _decode_list(data):
             item = _decode_dict(item)
             rv.append(item)
     return rv
+
 
 def _decode_dict(data):
     rv = {}
@@ -55,16 +56,17 @@ def load_mongo(json_glob_pattern):
         logging.debug("Wokring on " + filename)
         json_data = open(filename).read()
         try:
-            #auto-handling unicode object hook derived from
-            #http://stackoverflow.com/questions/956867/how-to-get-string-objects-instead-unicode-ones-from-json-in-python
-            data = json.loads(json_data, object_hook = _decode_dict)
+            # auto-handling unicode object hook derived from
+            # http://stackoverflow.com/questions/956867/how-to-get-string-
+            # objects-instead-unicode-ones-from-json-in-python
+            data = json.loads(json_data, object_hook=_decode_dict)
         except:
             print sys.argv[0], " Unexpected error:", sys.exc_info()[1]
         for vulndb in data['results']:
             logging.debug(json.dumps(vulndb, sort_keys=True, indent=4 * ' '))
             vulndb['_id'] = vulndb['osvdb_id']
             osvdb_id = collection.save(vulndb)
-        #osvdb_id = collection.insert(vulndb)
+        # osvdb_id = collection.insert(vulndb)
         logging.info("Saved: ", filename, " with MongoDB id: ", osvdb_id)
 
 
@@ -74,37 +76,41 @@ def _run_aggregation():
     alternate query based upon ext.references.type == 'CVE ID.'
     """
     results = db.osvdb.aggregate([
-        { "$project": { "ext_references": 1,
-            "classifications": {
-                "$cond": {
-                    "if": { "$eq": [{"$size": "$classifications"}, 0] },
-                    "then": ["bogus"],
-                    "else": "$classifications" } } } },
-        { "$unwind": "$ext_references" },
-        { "$match": { "ext_references.type": 'CVE ID' } },
-        { "$unwind": "$classifications" },
-        { "$group": {
-            "_id": {"_id": "$_id", "CVE_ID": { "$concat":
-                [ "CVE-", "$ext_references.value"] }},
-            "public_exploit": { "$sum": { "$cond": [
-                { "$eq": [ "$classifications.name", "exploit_public" ] }, 1, 0 ]}},
-            "private_exploit": { "$sum": { "$cond": [
-                { "$eq": [ "$classifications.name", "exploit_private" ] }, 1, 0 ]}}
+        {"$project": {"ext_references": 1,
+                      "classifications": {"$cond": {
+                                          "if": {"$eq": [{"$size":
+                                                 "$classifications"}, 0]},
+                                          "then": ["bogus"],
+                                          "else": "$classifications"}}}},
+        {"$unwind": "$ext_references"},
+        {"$match": {"ext_references.type": 'CVE ID'}},
+        {"$unwind": "$classifications"},
+        {"$group": {
+            "_id": {"_id": "$_id", "CVE_ID": {"$concat":
+                    ["CVE-", "$ext_references.value"]}},
+            "public_exploit": {"$sum": {"$cond": [
+                {"$eq": ["$classifications.name", "exploit_public"]}, 1, 0]}},
+            "private_exploit": {"$sum": {"$cond": [
+                {"$eq": ["$classifications.name", "exploit_private"]}, 1, 0]}}
         }},
-        { "$project": { "_id": 0, "OSVDB": "$_id._id", "CVE_ID": "$_id.CVE_ID", 
-            "public_exploit": 1, "private_exploit": 1 } }
+        {"$project": {"_id": 0, "OSVDB": "$_id._id", "CVE_ID": "$_id.CVE_ID",
+                      "public_exploit": 1, "private_exploit": 1}}
     ])
 
-    logging.info("There are {} entries in this aggregation.".format(len(results['result'])))
-    #logging.debug("The headers are: " + results['result'][0].keys())
+    logging.info("There are {} entries in this aggregation.".format(
+                 len(results['result'])))
+    # logging.debug("The headers are: " + results['result'][0].keys())
     return results
 
-## Create helper function for writing unicode to CSV
+
 class _DictUnicodeProxy(object):
+    """Create helper function for writing unicode to CSV"""
     def __init__(self, d):
         self.d = d
+
     def __iter__(self):
         return self.d.__iter__()
+
     def get(self, item, default=None):
         i = self.d.get(item, default)
         if isinstance(i, list):
@@ -113,8 +119,9 @@ class _DictUnicodeProxy(object):
             return i.encode('utf-8')
         return i
 
-## Dump output to CSV
+
 def _write_vulndb(results, filename):
+    """Dump output to CSV"""
     csvfile = open(filename, 'wb')
 
     headers = ['CVE_ID', 'OSVDB', 'public_exploit', 'private_exploit']
@@ -124,6 +131,7 @@ def _write_vulndb(results, filename):
         csvwriter.writerow(_DictUnicodeProxy(result))
 
     csvfile.close()
+
 
 def get_extract(extract_file):
     results = _run_aggregation()
