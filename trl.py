@@ -41,7 +41,7 @@ def get_trl(trl_path):
     """Getch the TRL from RedSeal"""
 
     req = urllib2.Request(trl_source_url)
-    base64str = base64.encodestring('%s:%s' % (username, 
+    base64str = base64.encodestring('%s:%s' % (username,
         password)).replace('\n', '')
     req.add_header("Authorization", "Basic %s" % base64str)
     result = urllib2.urlopen(req)
@@ -66,8 +66,10 @@ def _remap_trl(trl_data, vulndb):
 
     for vulnerability in trl_data.vulnerabilities.vulnerability:
         if vulndb[vulndb['CVE_ID'] == vulnerability.get('cveID')].empty:
-            vulnerability.set('CVSSTemporalScore', vulnerability.get('CVSSBaseScore'))
-        elif vulndb[vulndb['CVE_ID'] == vulnerability.get('cveID')].public_exploit.any >= 1:
+            vulnerability.set('CVSSTemporalScore', 
+            vulnerability.get('CVSSBaseScore'))
+        elif vulndb[vulndb['CVE_ID'] == vulnerability.get('cveID')].
+            public_exploit.any >= 1:
             vulnerability.set('CVSSTemporalScore', str(CVSS_High))
         elif vulndb[vulndb['CVE_ID'] == vulnerability.get('cveID')].private_exploit.any >= 1:
             vulnerability.set('CVSSTemporalScore', str(CVSS_Medium))
@@ -77,7 +79,7 @@ def _remap_trl(trl_data, vulndb):
 
 
 def _write_trl(trl_data, modified_trl_path):
-    """write the modified trl out to disk"""
+    """Write the modified trl out to disk"""
     # etree.cleanup_namespaces(trl)
     obj_xml = etree.tostring(trl_data, xml_declaration=True, 
         pretty_print=True, encoding='UTF-8')
@@ -132,7 +134,8 @@ def post_trl(file_path):
     # from boto.s3.key import Key
     # k = Key(bucket)
     # k.key = key_name
-    # k.set_contents_from_filename(file_path, cb=percent_cb, num_cb=10, encrypt_key=True, policy='public-read')
+    # k.set_contents_from_filename(file_path, cb=percent_cb, num_cb=10, 
+    #   encrypt_key=True, policy='public-read')
 
     return
 
