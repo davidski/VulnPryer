@@ -22,9 +22,9 @@ def mkdate(datestr):
         return datestr
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-e', '--enddate', type=mkdate, default=from_date,
+parser.add_argument('-e', '--enddate', type=mkdate, default=to_date,
                     help="Start date.")
-parser.add_argument('-s', '--startdate', type=mkdate, default=to_date,
+parser.add_argument('-s', '--startdate', type=mkdate, default=from_date,
                     help="End date.")
 args = parser.parse_args()
 
