@@ -49,5 +49,4 @@ print "Generating modified TRL"
 new_trl_path = modify_trl('/tmp/trl.gz')
 
 print "Posting modified TRL to S3"
-post_trl(new_trl_path, 'analysis.cism.sch',
-         '/vulndb/data/trl/RedSeal_TRL_modified.gz')
+post_trl(new_trl_path)
