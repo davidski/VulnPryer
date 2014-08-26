@@ -8,6 +8,8 @@ import sys
 import glob
 import logging
 
+logging.basicConfig(format='%(asctime)s %{levelname}s %(message)s')
+
 config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
 
@@ -62,12 +64,29 @@ def load_mongo(json_glob_pattern):
             data = json.loads(json_data, object_hook=_decode_dict)
         except:
             print sys.argv[0], " Unexpected error:", sys.exc_info()[1]
+        if data is None:
+            continue
         for vulndb in data['results']:
             logging.debug(json.dumps(vulndb, sort_keys=True, indent=4 * ' '))
             vulndb['_id'] = vulndb['osvdb_id']
             osvdb_id = collection.save(vulndb)
         # osvdb_id = collection.insert(vulndb)
         logging.info("Saved: ", filename, " with MongoDB id: ", osvdb_id)
+    _map_osvdb_to_cve()
+
+
+def _map_osvdb_to_cve():
+    """Add CVE_ID field to all OSVDB entries"""
+    results = db.osvdb.aggregate([
+        {"$unwind": "$ext_references"},
+        {"$match": {"ext_references.type": "CVE ID"}},
+        {"$project": {"CVE_ID": "$ext_references.value"}},
+        {"$group": {"_id": "$_id", "CVE_ID": {"$addToSet": "$CVE_ID"}}}
+    ])
+    for entry in results['result']:
+        db.osvdb.update({"_id": entry['_id']}, {"$set":
+                        {"CVE_ID": entry['CVE_ID']}})
+        logging.debug("Adding CVEs to {}".format(entry['_id']))
 
 
 def _run_aggregation():
@@ -76,31 +95,70 @@ def _run_aggregation():
     alternate query based upon ext.references.type == 'CVE ID.'
     """
     results = db.osvdb.aggregate([
-        {"$project": {"ext_references": 1,
+        {"$unwind": "$CVE_ID"},
+        {"$unwind": "$cvss_metrics"},
+        {"$project": {"CVE_ID": 1, "ext_references": 1,
+                      "cvss_score":
+                      "$cvss_metrics.calculated_cvss_base_score",
                       "classifications": {"$cond": {
                                           "if": {"$eq": [{"$size":
                                                  "$classifications"}, 0]},
                                           "then": ["bogus"],
                                           "else": "$classifications"}}}},
-        {"$unwind": "$ext_references"},
-        {"$match": {"ext_references.type": 'CVE ID'}},
         {"$unwind": "$classifications"},
+        {"$unwind": "$ext_references"},
         {"$group": {
             "_id": {"_id": "$_id", "CVE_ID": {"$concat":
-                    ["CVE-", "$ext_references.value"]}},
+                    ["CVE-", "$CVE_ID"]}},
             "public_exploit": {"$sum": {"$cond": [
                 {"$eq": ["$classifications.name", "exploit_public"]}, 1, 0]}},
             "private_exploit": {"$sum": {"$cond": [
-                {"$eq": ["$classifications.name", "exploit_private"]}, 1, 0]}}
-        }},
-        {"$project": {"_id": 0, "OSVDB": "$_id._id", "CVE_ID": "$_id.CVE_ID",
-                      "public_exploit": 1, "private_exploit": 1}}
+                {"$eq": ["$classifications.name", "exploit_private"]}, 1, 0]}},
+            "cvss_score": {"$max": "$cvss_score"},
+            "msp": {"$sum": {"$cond": [{"$eq": ["$ext_references.type",
+                    "Metasploit URL"]}, 1, 0]}},
+            "edb": {"$sum": {"$cond": [{"$eq": ["$ext_references.type",
+                    "Exploit Database"]}, 1, 0]}},
+            "network_vector": {"$sum": {"$cond": [{"$eq": [
+                "$classifications.name", "location_remote"]}, 1, 0]}},
+            "impact_integrity": {"$sum": {"$cond": [
+                {"$eq": ["$classificaitons.type",
+                         "impact_integrity"]}, 1, 0]}},
+            "impact_confidentiality": {"$sum": {"$cond": [
+                {"$eq": ["$classificaitons.type",
+                         "impact_confidentiality"]}, 1, 0]}}}},
+        {"$project": {"_id": 0, "OSVDB": "$_id._id",
+                      "CVE_ID": "$_id.CVE_ID",
+                      "public_exploit": 1, "private_exploit": 1,
+                      "cvss_score": 1, "msp": 1, "edp": 1,
+                      "network_vector": 1, "impact_integrity": 1,
+                      "impact_confidentiality": 1}},
+        {"$match": {"network_vector": {"$gt": 0}}}
     ])
 
     logging.info("There are {} entries in this aggregation.".format(
                  len(results['result'])))
     # logging.debug("The headers are: " + results['result'][0].keys())
     return results
+
+
+def _calculate_mean_cvss():
+    """Calcuate the mean CVSS score across all known vulnerabilities"""
+    results = db.osvdb.aggregate([
+        {"$unwind": "$cvss_metrics"},
+        {"$group": {
+            "_id": "null",
+            "avgCVSS": {"$avg": "$cvss_metrics.calculated_cvss_base_score"}
+        }}
+    ])
+    logging.info("There are {} entries in this aggregation.".format(
+                 len(results['result'])))
+    # logging.debug("The headers are: " + results['result'][0].keys())
+    try:
+        avgCVSS = results['result'][0]['avgCVSS']
+    except:
+        avgCVSS = None
+    return avgCVSS
 
 
 class _DictUnicodeProxy(object):
