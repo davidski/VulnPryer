@@ -6,6 +6,8 @@ import oauth2
 from datetime import date, timedelta
 import logging
 
+logging.basicConfig(format='%(asctime)s %{levelname}s %(message)s')
+
 import ConfigParser
 config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
