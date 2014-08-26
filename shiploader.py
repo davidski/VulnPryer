@@ -182,9 +182,10 @@ def _write_vulndb(results, filename):
     """Dump output to CSV"""
     csvfile = open(filename, 'wb')
 
-    headers = ['CVE_ID', 'OSVDB', 'public_exploit', 'private_exploit',
-        'cvss_score', 'msp', 'edp', 'network_vector', 'impact_integrity',
-        'impact_confidentialit', 'network_vector']
+    #headers = ['CVE_ID', 'OSVDB', 'public_exploit', 'private_exploit',
+    #    'cvss_score', 'msp', 'edb', 'network_vector', 'impact_integrity',
+    #    'impact_confidentialit', 'network_vector']
+    headers = results['result'][0].keys
     csvwriter = csv.DictWriter(csvfile, fieldnames=headers)
     csvwriter.writeheader()
     for result in results['result']:
