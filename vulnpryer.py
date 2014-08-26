@@ -7,7 +7,7 @@ import logging
 
 # VulnDB components
 from vulndb import query_vulndb
-from stower import load_mongo, get_extract
+from shiploader import load_mongo, get_extract
 from forklift import get_trl, modify_trl, post_trl
 
 # set default dates
@@ -33,10 +33,10 @@ args = parser.parse_args()
 start_string = args.startdate
 start_string = start_string.strftime("%Y-%m-%d")
 end_string = args.enddate
-end_string = endstring.strftime("%Y-%m-%d")
+end_string = end_string.strftime("%Y-%m-%d")
 
 # set logging level
-numeric_level = getattr(logging, loglevel.upper(), None)
+numeric_level = getattr(logging, args.loglevel.upper(), None)
 if not isinstance(numeric_level, int):
     raise ValueErrr('Invalid log level; %s' % loglevel)
 logging.basicConfig(level=numeric_level)
