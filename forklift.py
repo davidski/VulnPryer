@@ -10,6 +10,8 @@ from lxml import etree
 import pandas as pd
 import logging
 
+logging.basicConfig(format='%(asctime)s %{levelname}s %(message)s')
+
 config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
 
@@ -59,22 +61,44 @@ def _read_vulndb_extract():
 def _remap_trl(trl_data, vulndb):
     """Rectify CVSS Values"""
 
-    CVSS_High = 10
-    CVSS_Medium = 7
-    CVSS_Low = 4
+    avg_cvss_score = 6.2
+    msp_factor = 2.5
+    edb_factor = 1.5
+    private_exploit_factor = .5
+    network_vector_factor = 2
+    impact_factor = 3
 
     for vulnerability in trl_data.vulnerabilities.vulnerability:
-        if vulndb[vulndb['CVE_ID'] == vulnerability.get('cveID')].empty:
-            vulnerability.set('CVSSTemporalScore',
-                              vulnerability.get('CVSSBaseScore'))
-        elif vulndb[vulndb['CVE_ID'] ==
-                    vulnerability.get('cveID')].public_exploit.any >= 1:
-            vulnerability.set('CVSSTemporalScore', str(CVSS_High))
-        elif vulndb[vulndb['CVE_ID'] ==
-                    vulnerability.get('cveID')].private_exploit.any >= 1:
-            vulnerability.set('CVSSTemporalScore', str(CVSS_Medium))
+        #start off with the NVD definition
+        modified_score = float(vulnerability.get('CVSSTemporalScore'))
+        #add deviation from mean
+        modified_score = ((modified_score - avg_cvss_score) / avg_cvss_score) * 10
+        #adjust up if metasploit module exists
+        if vulndb[vulndb['CVE_ID'] ==
+            vulnerability.get('cveID')].msp.any >= 1:
+                modified_score = modified_score + msp_factor
+        #adjust up if exploit DB entry exists
+        if vulndb[vulndb['CVE_ID'] ==
+            vulnerability.get('cveID')].edb.any >= 1:
+                modified_score = modified_score + edb_factor
+        #adjust up if a private exploit is known
+        if vulndb[vulndb['CVE_ID'] ==
+            vulnerability.get('cveID')].private_exploit.any >= 1:
+                modified_score = modified_score + private_exploit_factor
         else:
-            vulnerability.set('CVSSTemporalScore', str(CVSS_Low))
+            modified_score = modified_score - private_exploit_factor
+        #adjust down for impacts that aren't relevant to our loss scenario
+        if (vulndb[vulndb['CVE_ID'] ==
+            vulnerability.get('cveID')].impact_integrity.any +
+            vulndb[vulndb['CVE_ID'] ==
+            vulnerability.get('cveID')].impact_confidentiality.any) < 1:
+                 modified_score = modified_score - impact_factor
+        #adjust down for attack vectors that aren't in our loss scenario
+        if vulndb[vulndb['CVE_ID'] ==
+             vulnerability.get('cveID')].network_vector.any < 1:
+                 modified_score = modified_score - network_vector_factor
+        #set the modified score
+        vulnerability.set('CVSSTemporalScore', str(modified_score))
     return trl_data
 
 
