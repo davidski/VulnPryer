@@ -38,7 +38,7 @@ end_string = end_string.strftime("%Y-%m-%d")
 # set logging level
 numeric_level = getattr(logging, args.loglevel.upper(), None)
 if not isinstance(numeric_level, int):
-    raise ValueErr('Invalid log level; %s' % loglevel)
+    raise ValueError('Invalid log level; %s' % args.loglevel)
 logging.basicConfig(level=numeric_level)
 
 print "Range requested %s - %s" % (start_string, end_string)
