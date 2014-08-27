@@ -18,7 +18,7 @@ VulnPryer may be set up the hard (manual) way and the easy (automated) way.
 ## Manual Installation
 1. Setup an instance of MongoDB (authentication not currently supported)
 2. git clone https://github.com/davidski/VulnPryer vulnpryer
-3  cd ./vulnpryer
+3.  cd ./vulnpryer
 4. pip install -r requirements
 5. cp vulnpryer.conf{.sample,}
 6. vi vulnpryer.conf #modify with your settings and credentials.
