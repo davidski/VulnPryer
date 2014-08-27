@@ -92,11 +92,11 @@ def _remap_trl(trl_data, vulndb):
             vulnerability.get('cveID')].impact_integrity.any +
             vulndb[vulndb['CVE_ID'] ==
             vulnerability.get('cveID')].impact_confidentiality.any) < 1:
-                 modified_score = modified_score - impact_factor
+                modified_score = modified_score - impact_factor
         # adjust down for attack vectors that aren't in our loss scenario
         if vulndb[vulndb['CVE_ID'] ==
-             vulnerability.get('cveID')].network_vector.any < 1:
-                 modified_score = modified_score - network_vector_factor
+            vulnerability.get('cveID')].network_vector.any < 1:
+                modified_score = modified_score - network_vector_factor
         # set the modified score
         vulnerability.set('CVSSTemporalScore', str(modified_score))
     return trl_data
