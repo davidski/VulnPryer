@@ -6,11 +6,11 @@ VulnPryer
 Vulnerability Pryer - Pries more context into your vulnerability data.
 
 #Description
-VulnPryer is the code behind a (vulnerability reprioritization project)[http://blog.severski.net/2014/08/introducing-vulnpryer.html]. 
+VulnPryer is the code behind a [vulnerability reprioritization project](http://blog.severski.net/2014/08/introducing-vulnpryer.html). 
 Using a vulnerability data feed (VulnPryer uses the VulnDB commercial project by default), VulnPryer will 
 download that feed on an incremental basis, load the feed into MongoDB for storage, extract a 
 mapping of features, and provide a remapping of vulnerabilities to custom severities for importing 
-into your analysis product of choice (VulnPryer targets the (RedSeal)[https://www.redsealnetworks.com/] platform by default).
+into your analysis product of choice (VulnPryer targets the [RedSeal](https://www.redsealnetworks.com/) platform by default).
 
 #Installation
 VulnPryer may be set up the hard (manual) way and the easy (automated) way.
