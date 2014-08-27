@@ -49,10 +49,10 @@ and organizations:
 [@kylemaxwell](https://twitter.com/alexcpsec) for the 
 [combine](https://github.com/mlsecproject/combine) project. VulnPryer has cribbed heavily from 
 that design pattern, including a crude aping of naming metaphors. :grin:
-- (Risk Based Security)[https://vulndb.cyberriskanalytics.com/] (RBS) 
+- [Risk Based Security](https://vulndb.cyberriskanalytics.com/) (RBS) 
 for providing the VulnDB product and for the support in getting this project 
 off the ground.
-- (Risk I/O)[https://www.risk.io/] for providing the inspiration 
+- [Risk I/O](https://www.risk.io/) for providing the inspiration 
 on this project and their continued support of the community.
-- (RedSeal){https://www.redsealnetworks.com] for providing the analysis platform for network 
+- [RedSeal](https://www.redsealnetworks.com) for providing the analysis platform for network 
 security posture review and analysis.
