@@ -130,7 +130,7 @@ def _run_aggregation():
         {"$project": {"_id": 0, "OSVDB": "$_id._id",
                       "CVE_ID": "$_id.CVE_ID",
                       "public_exploit": 1, "private_exploit": 1,
-                      "cvss_score": 1, "msp": 1, "edp": 1,
+                      "cvss_score": 1, "msp": 1, "edb": 1,
                       "network_vector": 1, "impact_integrity": 1,
                       "impact_confidentiality": 1}},
         {"$match": {"network_vector": {"$gt": 0}}}
