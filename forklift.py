@@ -74,7 +74,6 @@ def _remap_trl(trl_data, vulndb):
         # add deviation from mean
         modified_score = (modified_score -
                           avg_cvss_score) / avg_cvss_score
-        modified_score = 10
         # adjust up if metasploit module exists
         if vulndb[vulndb['CVE_ID'] ==
                   vulnerability.get('cveID')].msp.any >= 1:
@@ -91,9 +90,9 @@ def _remap_trl(trl_data, vulndb):
             modified_score = modified_score - private_exploit_factor
         # adjust down for impacts that aren't relevant to our loss scenario
         if (vulndb[vulndb['CVE_ID'] ==
-            vulnerability.get('cveID')].impact_integrity.any +
+            vulnerability.get('cveID')].impact_integrity.any < 1 and
             vulndb[vulndb['CVE_ID'] ==
-                   vulnerability.get('cveID')].impact_confidentiality.any) < 1:
+                   vulnerability.get('cveID')].impact_confidentiality.any < 1):
                 modified_score = modified_score - impact_factor
         # adjust down for attack vectors that aren't in our loss scenario
         if vulndb[vulndb['CVE_ID'] ==
