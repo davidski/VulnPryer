@@ -42,7 +42,7 @@ if not isinstance(numeric_level, int):
     raise ValueError('Invalid log level; %s' % args.loglevel)
 logging.basicConfig(level=numeric_level)
 
-print "{}: Range requested {} - {}".format(ctime(), start_string, 
+print "{}: Range requested {} - {}".format(ctime(), start_string,
                                            end_string)
 query_vulndb(args.startdate, args.enddate)
 
