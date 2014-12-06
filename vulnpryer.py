@@ -3,6 +3,7 @@
 import argparse
 from datetime import date, timedelta
 from dateutil.parser import parse
+from time import ctime
 import logging
 
 # VulnDB components
@@ -41,20 +42,23 @@ if not isinstance(numeric_level, int):
     raise ValueError('Invalid log level; %s' % args.loglevel)
 logging.basicConfig(level=numeric_level)
 
-print "Range requested %s - %s" % (start_string, end_string)
+print "{}: Range requested {} - {}".format(ctime(), start_string, 
+                                           end_string)
 query_vulndb(args.startdate, args.enddate)
 
-print "Loading data into Mongo"
+print "{}: Loading data into Mongo.".format(ctime())
 load_mongo('data_*.json')
 
-print "Generating extract"
+print "{}: Generating extract.".format(ctime())
 get_extract('/tmp/vulndb_export.csv')
 
-print "Fetching RedSeal TRL"
+print "{}: Fetching RedSeal TRL.".format(ctime())
 get_trl('/tmp/trl.gz')
 
-print "Generating modified TRL"
+print "{}: Generating modified TRL.".format(ctime())
 new_trl_path = modify_trl('/tmp/trl.gz')
 
-print "Posting modified TRL to S3"
+print "{}: Posting modified TRL to S3.".format(ctime())
 post_trl(new_trl_path)
+
+print "{}: VulnPryer run complete.".format(ctime())
