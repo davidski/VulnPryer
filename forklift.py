@@ -132,7 +132,7 @@ def post_trl(file_path):
     import boto.s3
     conn = boto.s3.connect_to_region(s3_region)
 
-    bucket = conn.get_bucket(s3_bucket)
+    bucket = conn.get_bucket(s3_bucket, validate=False)
 
     logging.info('Uploading %s to Amazon S3 bucket %s' % (
         file_path, s3_bucket))
