@@ -1,13 +1,13 @@
 language: python
 python:
-  - "2.6"
-  - "2.7"
-# command to install dependencies
+- '2.6'
+- '2.7'
 install:
-  #- pip install .
-  - "pip install flake8 --use-mirrors"
-  - "pip install -r requirements.txt"
+- pip install flake8 --use-mirrors
+- pip install -r requirements.txt
 before_script:
-  - flake8 .
-# command to run tests
+- flake8 .
 script: nosetests
+notifications:
+  slack:
+    secure: VpvXEX0d/vzCPfMYVGezTZ++eKjSzP06QnDHwMt0ppuk+2sO0ctiEjtNtTLCL4dSCl/TaIN2i1vdFDOSgtWnGh3bE2UQEm+3NO/UKtme9o+cnG6wpkgGlKvhpTbEpjWIF4/dNn36cyN5+EiNtEnOxzkuvDM0A7fQlXawie36wPM=
