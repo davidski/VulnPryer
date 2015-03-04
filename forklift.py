@@ -98,6 +98,9 @@ def _remap_trl(trl_data, vulndb):
         if vulndb[vulndb['CVE_ID'] ==
                   vulnerability.get('cveID')].network_vector.any < 1:
                     modified_score = modified_score - network_vector_factor
+        #confirm that our modified score is within max/min limits
+        if modified_score > 10: modified_score = 10
+        if modified_score < 0: modified_score = 0
         # set the modified score
         vulnerability.set('CVSSTemporalScore', str(modified_score))
     return trl_data
