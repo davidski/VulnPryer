@@ -13,7 +13,6 @@ trl_url= https://www.redsealnetworks.com/login/trl/RedSeal_TRL_7-0-latest.gz
 
 [Mongo]
 hostname= localhost
-vulnpryer.conf (END)
 
 [S3]
 bucket_name= YOUR_S3_BUCKET
