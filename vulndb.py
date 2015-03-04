@@ -5,10 +5,10 @@ import simplejson as json
 import oauth2
 from datetime import date, timedelta
 import logging
+import ConfigParser
 
 logging.basicConfig(format='%(asctime)s %{levelname}s %(message)s')
 
-import ConfigParser
 config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
 
@@ -43,9 +43,11 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
     reply['results'] = []
 
     while not finished:
-        url = 'https://vulndb.cyberriskanalytics.com/api/v1/vulnerabilities/find_by_date?' + \
-            'start_date=' + from_date + '&end_date=' + to_date + '&page=' + str(page_counter) + \
-            '&size=' + str(page_size) + '&date_type=updated_on'
+        url = 'https://vulndb.cyberriskanalytics.com' + \
+            '/api/v1/vulnerabilities/find_by_date?' + \
+            'start_date=' + from_date + '&end_date=' + to_date + '&page=' + \
+            str(page_counter) + '&size=' + str(page_size) + \
+            '&date_type=updated_on'
         logging.debug("Working on url: %s " % url)
 
         resp = request(url, filters=[auth])
