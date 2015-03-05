@@ -122,10 +122,10 @@ def _run_aggregation():
             "network_vector": {"$sum": {"$cond": [{"$eq": [
                 "$classifications.name", "location_remote"]}, 1, 0]}},
             "impact_integrity": {"$sum": {"$cond": [
-                {"$eq": ["$classificaitons.type",
+                {"$eq": ["$classifications.name",
                          "impact_integrity"]}, 1, 0]}},
             "impact_confidentiality": {"$sum": {"$cond": [
-                {"$eq": ["$classificaitons.type",
+                {"$eq": ["$classifications.name",
                          "impact_confidentiality"]}, 1, 0]}}}},
         {"$project": {"_id": 0, "OSVDB": "$_id._id",
                       "CVE_ID": "$_id.CVE_ID",
