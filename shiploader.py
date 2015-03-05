@@ -124,7 +124,7 @@ def _run_aggregation():
             "impact_integrity": {"$sum": {"$cond": [
                 {"$eq": ["$classifications.name",
                          "impact_integrity"]}, 1, 0]}},
-            "impact_confidentiality": {"$sum": {"$cond": [
+            "impact_confidential": {"$sum": {"$cond": [
                 {"$eq": ["$classifications.name",
                          "impact_confidentiality"]}, 1, 0]}}}},
         {"$project": {"_id": 0, "OSVDB": "$_id._id",
