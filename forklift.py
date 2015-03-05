@@ -92,7 +92,7 @@ def _remap_trl(trl_data, vulndb):
         if (vulndb[vulndb['CVE_ID'] ==
             vulnerability.get('cveID')].impact_integrity.any < 1 and
             vulndb[vulndb['CVE_ID'] ==
-                   vulnerability.get('cveID')].impact_confidential.any < 1):
+                   vulnerability.get('cveID')].impact_confidentiality.any < 1):
                 modified_score = modified_score - impact_factor
         # adjust down for attack vectors that aren't in our loss scenario
         if vulndb[vulndb['CVE_ID'] ==
