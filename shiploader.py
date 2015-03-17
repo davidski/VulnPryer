@@ -7,6 +7,7 @@ import simplejson as json
 import sys
 import glob
 import logging
+import os
 
 logging.basicConfig(format='%(asctime)s %{levelname}s %(message)s')
 
@@ -54,7 +55,7 @@ def _decode_dict(data):
 def load_mongo(json_glob_pattern):
     """Load a pattern of JSON files to Mongo"""
     path_to_json = json_directory + json_glob_pattern
-    for filename in glob.glob(path_to_json):
+    for filename in sorted(glob.glob(path_to_json), key=os.path.getmtime):
         logging.debug("Wokring on " + filename)
         json_data = open(filename).read()
         try:
