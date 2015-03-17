@@ -132,9 +132,9 @@ def _run_aggregation():
                       "public_exploit": 1, "private_exploit": 1,
                       "cvss_score": 1, "msp": 1, "edb": 1,
                       "network_vector": 1, "impact_integrity": 1,
-                      "impact_confidentiality": 1}},
-        {"$match": {"network_vector": {"$gt": 0}}}
+                      "impact_confidentiality": 1}}
     ])
+    # comment out {"$match": {"network_vector": {"$gt": 0}}}
 
     logging.info("There are {} entries in this aggregation.".format(
                  len(results['result'])))
