@@ -95,7 +95,8 @@ def _run_aggregation():
     this keeps the unwind from dropping empty classification documents
     alternate query based upon ext.references.type == 'CVE ID.'
     """
-    results = db.osvdb.aggregate([
+    results = []
+    result_cursor = db.osvdb.aggregate([
         {"$unwind": "$CVE_ID"},
         {"$unwind": "$cvss_metrics"},
         {"$project": {"CVE_ID": 1, "ext_references": 1,
@@ -134,11 +135,15 @@ def _run_aggregation():
                       "cvss_score": 1, "msp": 1, "edb": 1,
                       "network_vector": 1, "impact_integrity": 1,
                       "impact_confidentiality": "$impact_confidential"}}
-    ])
+    ], cursor={}
+    )
     # comment out {"$match": {"network_vector": {"$gt": 0}}}
 
+    for doc in result_cursor:
+        results.append(doc)
+
     logging.info("There are {} entries in this aggregation.".format(
-                 len(results['result'])))
+                 len(results)))
     # logging.debug("The headers are: " + results['result'][0].keys())
     return results
 
@@ -186,10 +191,10 @@ def _write_vulndb(results, filename):
     # headers = ['CVE_ID', 'OSVDB', 'public_exploit', 'private_exploit',
     # 'cvss_score', 'msp', 'edb', 'network_vector', 'impact_integrity',
     # 'impact_confidentialit', 'network_vector']
-    headers = results['result'][0].keys()
+    headers = results[0].keys()
     csvwriter = csv.DictWriter(csvfile, fieldnames=headers)
     csvwriter.writeheader()
-    for result in results['result']:
+    for result in results:
         csvwriter.writerow(_DictUnicodeProxy(result))
 
     csvfile.close()
