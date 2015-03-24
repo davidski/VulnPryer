@@ -127,13 +127,13 @@ def _run_aggregation():
                          "impact_integrity"]}, 1, 0]}},
             "impact_confidential": {"$sum": {"$cond": [
                 {"$eq": ["$classifications.name",
-                         "impact_confidentiality"]}, 1, 0]}}}},
+                         "impact_confidential"]}, 1, 0]}}}},
         {"$project": {"_id": 0, "OSVDB": "$_id._id",
                       "CVE_ID": "$_id.CVE_ID",
                       "public_exploit": 1, "private_exploit": 1,
                       "cvss_score": 1, "msp": 1, "edb": 1,
                       "network_vector": 1, "impact_integrity": 1,
-                      "impact_confidentiality": 1}}
+                      "impact_confidentiality": "$impact_confidential"}}
     ])
     # comment out {"$match": {"network_vector": {"$gt": 0}}}
 
