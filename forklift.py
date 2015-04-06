@@ -9,6 +9,8 @@ import os
 from lxml import etree
 import pandas as pd
 import logging
+import tempfile
+import re
 
 logging.basicConfig(format='%(asctime)s %{levelname}s %(message)s')
 
@@ -117,6 +119,21 @@ def _write_trl(trl_data, modified_trl_path):
         f.write(obj_xml)
 
 
+def _fixup_trl(modified_trl_path):
+    """Fix attribute order for trl node which RS 7.x is particular about"""
+    temp_file = tempfile.NamedTemporaryFile(delete=False)
+    output_file = gzip.open(temp_file.name, "wb")
+    reg_expression = '^<trl (.+) (publishedOn=\".+?\" version=\".+?\")>$'
+    reg_expression = re.compile(reg_expression)
+    fh = gzip.open(modified_trl_path, "rb")
+    for line in fh:
+        line = re.sub(reg_expression, r'<trl \2 \1>', line)
+        output_file.write(line)
+    fh.close()
+    output_file.close()
+    os.rename(temp_file.name, modified_trl_path)
+
+
 def modify_trl(original_trl):
     """public full trl modification script"""
     vulndb = _read_vulndb_extract()
@@ -125,6 +142,7 @@ def modify_trl(original_trl):
 
     new_trl_path = os.path.dirname(original_trl) + '/modified_trl.gz'
     _write_trl(modified_trl_data, new_trl_path)
+    _fixup_trl(new_trl_path)
     return new_trl_path
 
 
