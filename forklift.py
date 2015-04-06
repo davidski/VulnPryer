@@ -73,7 +73,7 @@ def _remap_trl(trl_data, vulndb):
         modified_score = float(vulnerability.get('CVSSTemporalScore'))
         # add deviation from mean
         modified_score = modified_score + (modified_score -
-                          avg_cvss_score) / avg_cvss_score
+                                           avg_cvss_score) / avg_cvss_score
         # adjust up if metasploit module exists
         if vulndb[vulndb['CVE_ID'] ==
                   vulnerability.get('cveID')].msp.any >= 1:
