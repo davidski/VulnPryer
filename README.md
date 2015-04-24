@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/davidski/VulnPryer.png)](http://travis-ci.org/davidski/VulnPryer)
+[![Build Status](https://secure.travis-ci.org/SCH-CISM/VulnPryer.png)](http://travis-ci.org/SCH-CISM/VulnPryer)
 
 VulnPryer
 =========
@@ -17,14 +17,14 @@ VulnPryer may be set up the hard (manual) way and the easy (automated) way.
 
 ## Manual Installation
 1. Setup an instance of MongoDB (authentication not currently supported)
-2. git clone https://github.com/davidski/VulnPryer vulnpryer
+2. git clone https://github.com/SCH-CISM/VulnPryer vulnpryer
 3.  cd ./vulnpryer
 4. pip install -r requirements
 5. cp vulnpryer.conf{.sample,}
 6. vi vulnpryer.conf #modify with your settings and credentials.
 
 ## Automated Installation
-1. Use the [chef-vulnpryer](https://github.com/davidski/chef-vulnpryer) cookbook to set up a full stack with all your dependencies resolved.
+1. Use the [chef-vulnpryer](https://github.com/SCH-CISM/chef-vulnpryer) cookbook to set up a full stack with all your dependencies resolved.
 2. Profit!
 
 #Usage
