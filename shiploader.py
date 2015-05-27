@@ -94,7 +94,7 @@ def _map_osvdb_to_cve():
 def _mark_deprecated_entries():
     """Mark deprecated entries as such"""
     logging.info("Marking deprecated entries based on title.")
-    results = db.osvdb.update(
+    db.osvdb.update(
         {'title': {'$regex': '^DEPRECA'}},
         {'$set': {'deprecated': True}},
         upsert=False, multi=True
