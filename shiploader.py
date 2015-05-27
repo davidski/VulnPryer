@@ -74,6 +74,7 @@ def load_mongo(json_glob_pattern):
         # osvdb_id = collection.insert(vulndb)
         logging.info("Saved: ", filename, " with MongoDB id: ", osvdb_id)
     _map_osvdb_to_cve()
+    _mark_deprecated_entries()
 
 
 def _map_osvdb_to_cve():
@@ -88,6 +89,16 @@ def _map_osvdb_to_cve():
         db.osvdb.update({"_id": entry['_id']}, {"$set":
                         {"CVE_ID": entry['CVE_ID']}})
         logging.debug("Adding CVEs to {}".format(entry['_id']))
+
+
+def _mark_deprecated_entries():
+    """Mark deprecated entries as such"""
+    logging.info("Marking deprecated entries based on title.")
+    results = db.osvdb.update(
+        {'title': {'$regex': '^DEPRECA'}},
+        {'$set': {'deprecated': True}},
+        upsert=False, multi=True
+    )
 
 
 def _run_aggregation():
