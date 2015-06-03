@@ -42,6 +42,19 @@ you can run the individual compoents manually:
   2. shiploader.py
   3. forklift.py
 
+#Dependencies
+VulnPryer relies on the following third-party libraries. Note that newer versions of these libraries may be available, but have not been tested.
+
+argparse >= 1.2.1   [http://code.google.com/p/argparse/ - Now part of Python, version 2.7, 3.2, or higher] 
+boto >= 2.32.1      [https://github.com/boto/boto] 
+filechunkio >= 1.5  [https://bitbucket.org/fabian/filechunkio] 
+lxml >= 3.3.5       [http://lxml.de/] 
+oauth2 >= 1.5.211   [http://oauth.net/2/] 
+pandas >= 0.13.1    [http://pandas.pydata.org/] 
+pymongo >= 2.7.2    [http://api.mongodb.org/python/current/] 
+restkit >= 4.2.2    [http://restkit.org/] 
+simplejson >= 3.6.2 [https://pypi.python.org/pypi/simplejson/]
+
 #Acknowledgements
 VulnPryer would not exist without the inspiration and assistance of the following individuals 
 and organizations:
