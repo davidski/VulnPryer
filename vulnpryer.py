@@ -3,8 +3,9 @@
 import argparse
 from datetime import date, timedelta
 from dateutil.parser import parse
-from time import ctime
+# from time import ctime
 import logging
+import sys
 
 # VulnDB components
 from vulndb import query_vulndb
@@ -40,25 +41,34 @@ end_string = end_string.strftime("%Y-%m-%d")
 numeric_level = getattr(logging, args.loglevel.upper(), None)
 if not isinstance(numeric_level, int):
     raise ValueError('Invalid log level; %s' % args.loglevel)
-logging.basicConfig(level=numeric_level)
+logging.basicConfig(stream=sys.stdout,
+                    level=numeric_level,
+                    format='%(asctime)s %(name)s %(levelname)s %(message)s')
 
-print "{}: Range requested {} - {}".format(ctime(), start_string,
-                                           end_string)
+logger = logging.getLogger('vulnpryer')
+logger.info("Range requested {} - {}".format(start_string, end_string))
+print("Range requested {} - {}".format(start_string, end_string))
 query_vulndb(args.startdate, args.enddate)
 
-print "{}: Loading data into Mongo.".format(ctime())
+logger.info("Loading data into Mongo.")
+print("Loading data into Mongo.")
 load_mongo('data_*.json')
 
-print "{}: Generating extract.".format(ctime())
+logger.info("Generating extract.")
+print("Generating extract.")
 get_extract('/tmp/vulndb_export.csv')
 
-print "{}: Fetching RedSeal TRL.".format(ctime())
+logger.info("Fetching RedSeal TRL.")
+print("Fetching RedSeal TRL.")
 get_trl('/tmp/trl.gz')
 
-print "{}: Generating modified TRL.".format(ctime())
+logger.info("Generating modified TRL.")
+print("Generating modified TRL.")
 new_trl_path = modify_trl('/tmp/trl.gz')
 
-print "{}: Posting modified TRL to S3.".format(ctime())
+logger.info("Posting modified TRL to S3.")
+print("Posting modified TRL to S3.")
 post_trl(new_trl_path)
 
-print "{}: VulnPryer run complete.".format(ctime())
+logger.info("VulnPryer run complete.")
+print("VulnPryer run complete.")

@@ -12,7 +12,7 @@ import logging
 import tempfile
 import re
 
-logging.basicConfig(format='%(asctime)s %{levelname}s %(message)s')
+logger = logging.getLogger('vulnpryer.forklift')
 
 config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
@@ -157,7 +157,7 @@ def post_trl(file_path):
 
     bucket = conn.get_bucket(s3_bucket, validate=False)
 
-    logging.info('Uploading %s to Amazon S3 bucket %s' % (
+    logger.info('Uploading {} to Amazon S3 bucket {}'.format(
         file_path, s3_bucket))
 
     import sys

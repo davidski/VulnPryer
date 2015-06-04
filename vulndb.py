@@ -7,7 +7,7 @@ from datetime import date, timedelta
 import logging
 import ConfigParser
 
-logging.basicConfig(format='%(asctime)s %{levelname}s %(message)s')
+logger = logging.getLogger('vulnpryer.vulndb')
 
 config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
@@ -26,7 +26,7 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
     from_date = from_date.strftime("%Y-%m-%d")
     to_date = to_date.strftime("%Y-%m-%d")
 
-    logging.info("Working on date range: %s - %s" % (from_date, to_date))
+    logger.info("Working on date range: {} - {}".format(from_date, to_date))
 
     consumer = oauth2.Consumer(key=consumer_key, secret=consumer_secret)
     # client = oauth2.Client(consumer)
@@ -49,22 +49,22 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
             str(page_counter) + '&size=' + str(page_size) + \
             '&date_type=updated_on' + \
             '&nested=true'
-        logging.debug("Working on url: %s " % url)
+        logger.debug("Working on url: {} ".format(url))
 
         resp = request(url, filters=[auth])
         if resp.status_int == 404:
-            logging.warning("Could not find anything for the week begining: %s"
-                            % from_date)
+            logger.warning("Could not find anything for the week " +
+                           "begining: {}".format(from_date))
             return
         if resp.status_int != 200:
-            raise Exception("Invalid response %s." % resp['status'])
+            raise Exception("Invalid response {}.".format(resp['status']))
 
-        logging.debug("\tHTTP Response code: " + str(resp.status_int))
+        logger.debug("\tHTTP Response code: " + str(resp.status_int))
 
         """parse response and append to working set"""
         page_reply = json.loads(resp.body_string())
-        logging.debug("Retrieving page {} of {}.".format(page_counter,
-                      -(-page_reply['total_entries'] // page_size)))
+        logger.debug("Retrieving page {} of {}.".format(page_counter,
+                     -(-page_reply['total_entries'] // page_size)))
 
         if len(page_reply['results']) < page_size:
             finished = True
@@ -74,7 +74,7 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
             page_counter += 1
         reply['results'].extend(page_reply['results'])
 
-    logging.info("Returning %s out of %s results" % (str(len(
+    logger.info("Returning {} out of {} results".format(str(len(
         reply['results'])), str(reply['total_entries'])))
     return reply
 
