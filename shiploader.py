@@ -9,7 +9,7 @@ import glob
 import logging
 import os
 
-logging.basicConfig(format='%(asctime)s %{levelname}s %(message)s')
+logger = logging.getLogger('vulnpryer.shiploader')
 
 config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
@@ -56,7 +56,7 @@ def load_mongo(json_glob_pattern):
     """Load a pattern of JSON files to Mongo"""
     path_to_json = json_directory + json_glob_pattern
     for filename in sorted(glob.glob(path_to_json), key=os.path.getmtime):
-        logging.debug("Wokring on " + filename)
+        logger.info("Working on: {}".format(filename))
         json_data = open(filename).read()
         try:
             # auto-handling unicode object hook derived from
@@ -68,12 +68,15 @@ def load_mongo(json_glob_pattern):
         if data is None:
             continue
         for vulndb in data['results']:
-            logging.debug(json.dumps(vulndb, sort_keys=True, indent=4 * ' '))
+            logger.debug(json.dumps(vulndb, sort_keys=True, indent=4 * ' '))
             vulndb['_id'] = vulndb['osvdb_id']
             osvdb_id = collection.save(vulndb)
-        # osvdb_id = collection.insert(vulndb)
-        logging.info("Saved: ", filename, " with MongoDB id: ", osvdb_id)
+            # osvdb_id = collection.insert(vulndb)
+            logger.debug("Saved: {} with MongoDB id: {}".format(
+                filename, osvdb_id))
+    logger.info("Mapping OSVDB entries to CVE IDs")
     _map_osvdb_to_cve()
+    logger.info("Marking deprecated VUulnDB entries")
     _mark_deprecated_entries()
 
 
@@ -88,12 +91,12 @@ def _map_osvdb_to_cve():
     for entry in results['result']:
         db.osvdb.update({"_id": entry['_id']}, {"$set":
                         {"CVE_ID": entry['CVE_ID']}})
-        logging.debug("Adding CVEs to {}".format(entry['_id']))
+        logger.info("Adding CVEs to {}".format(entry['_id']))
 
 
 def _mark_deprecated_entries():
     """Mark deprecated entries as such"""
-    logging.info("Marking deprecated entries based on title.")
+    logger.info("Marking deprecated entries based on title.")
     db.osvdb.update(
         {'title': {'$regex': '^DEPRECA'}},
         {'$set': {'deprecated': True}},
@@ -153,9 +156,9 @@ def _run_aggregation():
     for doc in result_cursor:
         results.append(doc)
 
-    logging.info("There are {} entries in this aggregation.".format(
-                 len(results)))
-    # logging.debug("The headers are: " + results['result'][0].keys())
+    logger.info("There are {} entries in this aggregation.".format(
+                len(results)))
+    logger.debug("The headers are: {}".format(results[0].keys()))
     return results
 
 
@@ -168,9 +171,9 @@ def _calculate_mean_cvss():
             "avgCVSS": {"$avg": "$cvss_metrics.calculated_cvss_base_score"}
         }}
     ])
-    logging.info("There are {} entries in this aggregation.".format(
-                 len(results['result'])))
-    # logging.debug("The headers are: " + results['result'][0].keys())
+    logger.info("There are {} entries in this aggregation.".format(
+                len(results['result'])))
+    logger.debug("The headers are: {}".format(results['result'][0].keys()))
     try:
         avgCVSS = results['result'][0]['avgCVSS']
     except:
