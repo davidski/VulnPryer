@@ -32,7 +32,7 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
     # client = oauth2.Client(consumer)
 
     # now get our request token
-    auth = oauth.OAuthFilter('*', consumer)
+    auth = OAuthFilter('*', consumer)
 
     # initialize the page counter either at the first page or whatever page
     # was requested
