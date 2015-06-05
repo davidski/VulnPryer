@@ -6,6 +6,7 @@ import simplejson as json
 from datetime import date, timedelta
 import logging
 import ConfigParser
+from builtins import str
 
 logger = logging.getLogger('vulnpryer.vulndb')
 
@@ -102,7 +103,7 @@ def query_vulndb(from_date, to_date, day_interval=1):
 
         with io.open(json_directory + 'data_' + window_start.strftime(
                      "%Y-%m-%d") + '.json', 'w', encoding='utf-8') as f:
-                    f.write(unicode(json.dumps(reply, ensure_ascii=False)))
+                    f.write(str(json.dumps(reply, ensure_ascii=False)))
                     f.close
 
 if __name__ == "__main__":
