@@ -64,7 +64,8 @@ def load_mongo(json_glob_pattern):
             # objects-instead-unicode-ones-from-json-in-python
             data = json.loads(json_data, object_hook=_decode_dict)
         except:
-            print sys.argv[0], " Unexpected error:", sys.exc_info()[1]
+            print("{} Unexpected error: {}".format(sys.argv[0],
+                sys.exc_info()[1]))
         if data is None:
             continue
         for vulndb in data['results']:
