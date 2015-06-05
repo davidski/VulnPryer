@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 from restkit import OAuthFilter, request
+import restkit.oauth2 as oauth
 import simplejson as json
-import oauth2
 from datetime import date, timedelta
 import logging
 import ConfigParser
@@ -28,11 +28,11 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
 
     logger.info("Working on date range: {} - {}".format(from_date, to_date))
 
-    consumer = oauth2.Consumer(key=consumer_key, secret=consumer_secret)
+    consumer = oauth.Consumer(key=consumer_key, secret=consumer_secret)
     # client = oauth2.Client(consumer)
 
     # now get our request token
-    auth = OAuthFilter('*', consumer)
+    auth = oauth.OAuthFilter('*', consumer)
 
     # initialize the page counter either at the first page or whatever page
     # was requested
