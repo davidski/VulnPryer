@@ -36,6 +36,7 @@ def _read_trl(trl_location):
 
     parsed = objectify.parse(gzip.open(trl_location))
     root = parsed.getroot()
+    logger.info('Finished reading TRL')
 
     return root
 
@@ -52,6 +53,9 @@ def get_trl(trl_path):
     with open(trl_path, "wb") as local_file:
         local_file.write(result.read())
         local_file.close()
+
+    logger.info('Downloaded TRL from RedSeal')
+
 
 
 def _read_vulndb_extract():
@@ -71,6 +75,10 @@ def _remap_trl(trl_data, vulndb):
     impact_factor = 3
 
     for vulnerability in trl_data.vulnerabilities.vulnerability:
+
+        logger.debug('Adjusting priority of {}'.format(
+            vulnerability.get('cveID')))
+
         # start off with the NVD definition
         modified_score = float(vulnerability.get('CVSSTemporalScore'))
         # add deviation from mean
@@ -107,6 +115,7 @@ def _remap_trl(trl_data, vulndb):
             modified_score = 0
         # set the modified score
         vulnerability.set('CVSSTemporalScore', str(modified_score))
+    logger.debug('Completed adjustments to TRL.')
     return trl_data
 
 
