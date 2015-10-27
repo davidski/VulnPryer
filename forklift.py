@@ -57,7 +57,6 @@ def get_trl(trl_path):
     logger.info('Downloaded TRL from RedSeal')
 
 
-
 def _read_vulndb_extract():
     """read in the extracted VulnDB data"""
     vulndb = pd.read_csv(temp_directory + 'vulndb_export.csv')
