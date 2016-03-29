@@ -8,9 +8,10 @@ import logging
 import sys
 
 # VulnDB components
-from vulndb import query_vulndb
-from shiploader import load_mongo, get_extract
-from forklift import get_trl, modify_trl, post_trl
+from feed import query_feed
+from store import load_feed, get_extract
+from score import apply_model
+from apply import load_mongo, get_extract
 
 # set default dates
 to_date = date.today()
@@ -48,27 +49,27 @@ logging.basicConfig(stream=sys.stdout,
 logger = logging.getLogger('vulnpryer')
 logger.info("Range requested {} - {}".format(start_string, end_string))
 print("Range requested {} - {}".format(start_string, end_string))
-query_vulndb(args.startdate, args.enddate)
+query_feed(args.startdate, args.enddate)
 
-logger.info("Loading data into Mongo.")
-print("Loading data into Mongo.")
-load_mongo('data_*.json')
+logger.info("Loading data into data store.")
+print("Loading data into data store.")
+load_feed('data_*.json')
 
-logger.info("Generating extract.")
-print("Generating extract.")
-get_extract('/tmp/vulndb_export.csv')
+logger.info("Applying model.")
+print("Applying model.")
+apply_model('/tmp/vulndb_export.csv')
 
 logger.info("Fetching RedSeal TRL.")
 print("Fetching RedSeal TRL.")
-get_trl('/tmp/trl.gz')
+load_source('/tmp/trl.gz')
 
 logger.info("Generating modified TRL.")
 print("Generating modified TRL.")
-new_trl_path = modify_trl('/tmp/trl.gz')
+new_trl_path = apply_source('/tmp/trl.gz')
 
 logger.info("Posting modified TRL to S3.")
 print("Posting modified TRL to S3.")
-post_trl(new_trl_path)
+save_source(new_trl_path)
 
 logger.info("VulnPryer run complete.")
 print("VulnPryer run complete.")
