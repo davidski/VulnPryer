@@ -1,0 +1,9 @@
+[Core]
+Name = MongoDB
+Module = store
+
+[Documentation]
+Author = David F. Severski
+Version = 0.1
+Website = http://github.com/davidski/vulnpryer
+Description = Store plugin for MongoDB

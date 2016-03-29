@@ -1,0 +1,26 @@
+---
+# Implementation of VP 1.0 Model in VP 2.0 syntax
+model_name   : "VulnPryer 1.0 Model"
+model:
+ - initial_value: "CVSS Temporal"
+ - normalize    : true
+ - feature_scale: 
+   - feature: msp # MSP's presence can only make something worse
+     present: +2.5
+     absent : 0
+   - feature: edb # EDB can only make things worse
+     present: +1.5
+     absent : 0
+   - feature: private_exploit # presence of a private exploit can go +/-
+     present: .5
+     absent: -.5
+   - feature: impact_confidentiality # an impact on confidentiality can go +/-
+     present: 3
+     absent: -3
+   - feature: network_vector # lack of network only make things better
+     present: 0
+     absent : -3
+ - ceiling: 10
+ - floor: 0
+ - finalize : true # all done!
+...

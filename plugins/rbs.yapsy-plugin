@@ -1,0 +1,9 @@
+[Core]
+Name = RBS
+Module = feed
+
+[Documentation]
+Author = David F. Severski
+Version = 0.1
+Website = http://github.com/davidski/vulnpryer
+Description = Feed plugin for RBS
