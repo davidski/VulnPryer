@@ -1,32 +1,31 @@
 #!/usr/bin/env python
 
-import ConfigParser
-import logging
+import VulnPryerPluginClass as plugintypes
 
+import logging
 logger = logging.getLogger('vulnpryer.apply')
 
-config = ConfigParser.ConfigParser()
-config.read('vulnpryer.conf')
 
-def _loadplugins():
-    """load plugins"""
-    pass
+class IRedSeal(plugintypes.IApplyPlugin):
+    """Apply to RedSeal TRL plugin."""
 
-def _load_source():
-    """load the source"""
-    pass
+    def load_source(self):
+        """Load the source."""
+        pass
 
-def _prioritize():
-    """loop over the data and apply the new scores"""
-    pass
+    def prioritize(self):
+        """Loop over the data and apply the new scores."""
+        pass
 
-def _write_output():
-    """send modified data stream to output"""
-    pass
+    def write_output(self):
+        """Send modified data stream to output."""
+        pass
 
-def _send_notification():
-    """when a vuln is modified, send a notification to channel of choice"""
-    pass
+    def send_notification(self):
+        """
+        When a vuln is modified, send a notification to channel of choice.
+        """
+        pass
 
 if __name__ == "__main__":
     modify_trl('/tmp/trl.gz')

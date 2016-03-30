@@ -1,34 +1,35 @@
 #!/usr/bin/env python
 
-import ConfigParser
+import VulnPryerPluginClass as plugintypes
+
 from pymongo import MongoClient
-import csv
 import simplejson as json
 import sys
 import glob
-import logging
 import os
 
+import logging
 logger = logging.getLogger('vulnpryer.store')
 
-config = ConfigParser.ConfigParser()
-config.read('vulnpryer.conf')
 
-def _connect_to_datasctore():
-  """ Connect to datastore """
-  pass
+class IMongoDB(plugintypes.IStorePlugin):
+    """MongoDB storage plugin"""
 
-def _load_json():
-  """ Load JSON to selected data store"""
-  pass
+    def connect_to_datastore(self):
+        """Connect to datastore."""
+        pass
 
-def _fetch_vuln_details():
-  """ Fetch data on a particular vuln """
-  pass
+    def load_json(self):
+        """Load JSON to selected data store."""
+        pass
 
-def _store_vuln_details():
-  """ store data on a particular vuln """
-  pass
+    def fetch_vuln_details(self):
+        """Fetch data on a particular vuln."""
+        pass
+
+    def store_vuln_details(self):
+        """Store data on a particular vuln."""
+        pass
 
 if __name__ == "__main__":
     """Read in all the json files"""

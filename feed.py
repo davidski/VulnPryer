@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import simplejson as json
-#!/usr/bin/env python
 
 import simplejson as json
 from datetime import date, timedelta
@@ -13,21 +12,26 @@ logger = logging.getLogger('vulnpryer.feed')
 config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
 
+
 def _load_plugins:
   """read in plugins"""
   pass
+
 
 def _init_plugin:
   """allow plugin to perform any setup functionality"""
   pass
 
+
 def fetch_feed:
   """ fetch data """
   pass
 
+
 def _shutdown_plugin:
   """allow plugin to shutdown cleanly"""
   pass
+
 
 def store_json:
   """store JSON files"""

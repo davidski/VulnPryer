@@ -1,38 +1,37 @@
 #!/usr/bin/env python
 
-import VulnpryerPluginClass as plugintypes                                                                   [0/1871]
+import VulnpryerPluginClass as plugintypes
+
 from restkit import OAuthFilter, request
 import simplejson as json
 import oauth2
 from datetime import date, timedelta
+
 import logging
+logger = logging.getLogger('vulnpryer.feed')
 
 
-class RBS(plugintypes.IFeedPlugin):
-    #move these from plugin class to the metadata
-    shortname = 'rbs' # every plugin must identify itself
-    version = '0.1'   # plugin version
+class IRBS(plugintypes.IFeedPlugin):
+    """move these from plugin class to the metadata"""
     def __init__(self):
-        logger = logging.getLogger('vulnpryer.feed')
+        plugintypes.IFeedPlugin.__init__(self)
 
-        config = self.config #configuration is passed to the plugin
+        self.consumer_key = self.get_config('VulnDB', 'consumer_key')
+        self.consumer_secret = self.get_config('VulnDB', 'consumer_secret')
+        self.request_token_url = self.get_config('VulnDB', 'request_token_url')
+        self.page_size = int(self.get_config('VulnDB', 'page_size'))
 
-        consumer_key = config.get('VulnDB', 'consumer_key')
-        consumer_secret = config.get('VulnDB', 'consumer_secret')
-        request_token_url = config.get('VulnDB', 'request_token_url')
-        page_size = int(config.get('VulnDB', 'page_size'))
-
-        temp_directory = self.working_directory
-        json_directory = self.data_directory
-
+        self.temp_directory = self.get_config('vulnpryer', 'working_directory')
+        self.json_directory = self.get_config('vulnpryer', 'data_directory')
 
     def _fetch_data(from_date, to_date, page_size=20, first_page=1):
-        """Fetch a chunk of vulndb"""
+        """Fetch a chunk of vulndb."""
 
         from_date = from_date.strftime("%Y-%m-%d")
         to_date = to_date.strftime("%Y-%m-%d")
 
-        logger.info("Working on date range: {} - {}".format(from_date, to_date))
+        logger.info("Working on date range: {} - {}".format(from_date,
+                                                            to_date))
 
         consumer = oauth2.Consumer(key=consumer_key, secret=consumer_secret)
         # client = oauth2.Client(consumer)
@@ -51,7 +50,8 @@ class RBS(plugintypes.IFeedPlugin):
         while not finished:
             url = 'https://vulndb.cyberriskanalytics.com' + \
                     '/api/v1/vulnerabilities/find_by_date?' + \
-                    'start_date=' + from_date + '&end_date=' + to_date + '&page=' + \
+                    'start_date=' + from_date + '&end_date=' + \
+                    to_date + '&page=' + \
                     str(page_counter) + '&size=' + str(page_size) + \
                     '&date_type=updated_on' + \
                     '&nested=true'
@@ -60,7 +60,7 @@ class RBS(plugintypes.IFeedPlugin):
             resp = request(url, filters=[auth])
             if resp.status_int == 404:
                 logger.warning("Could not find anything for the week " +
-                        "begining: {}".format(from_date))
+                               "begining: {}".format(from_date))
                 return
             if resp.status_int != 200:
                 raise Exception("Invalid response {}.".format(resp['status']))
@@ -70,7 +70,7 @@ class RBS(plugintypes.IFeedPlugin):
             """parse response and append to working set"""
             page_reply = json.loads(resp.body_string())
             logger.debug("Retrieving page {} of {}.".format(page_counter,
-                -(-page_reply['total_entries'] // page_size)))
+                         -(-page_reply['total_entries'] // page_size)))
 
             if len(page_reply['results']) < page_size:
                 finished = True
@@ -84,9 +84,8 @@ class RBS(plugintypes.IFeedPlugin):
             reply['results'])), str(reply['total_entries'])))
         return reply
 
-
     def query_feed(self, from_date, to_date, day_interval=1):
-        """Query RBS's VulnDB for a chunk of data"""
+        """Query RBS's VulnDB for a chunk of data."""
 
         from dateutil.parser import parse
         import io
@@ -107,9 +106,9 @@ class RBS(plugintypes.IFeedPlugin):
             reply = _fetch_data(window_start, window_end, page_size)
 
             with io.open(json_directory + 'data_' + window_start.strftime(
-                "%Y-%m-%d") + '.json', 'w', encoding='utf-8') as f:
+                         "%Y-%m-%d") + '.json', 'w', encoding='utf-8') as f:
                 f.write(unicode(json.dumps(reply, ensure_ascii=False)))
-                        f.close
+                f.close
 
 if __name__ == "__main__":
     """Pull in the previous day's events by default"""

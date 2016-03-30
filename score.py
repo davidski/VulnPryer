@@ -1,29 +1,16 @@
 #!/usr/bin/env python
 
 import ConfigParser
-from lxml import objectify
-import gzip
-import urllib2
-import base64
-import os
-from lxml import etree
 import pandas as pd
 import logging
-import tempfile
-import re
 
 logger = logging.getLogger('vulnpryer.score')
 
 config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
 
-def _read_vulndb_extract():
-    """read in the extracted VulnDB data"""
-    vulndb = pd.read_csv(temp_directory + 'vulndb_export.csv')
-    return vulndb
 
-
-def _rescore(vulnerability):
+def rescore(vulnerability):
     """Rectify CVSS Values"""
 
     avg_cvss_score = 6.2
@@ -33,7 +20,7 @@ def _rescore(vulnerability):
     network_vector_factor = 2
     impact_factor = 3
 
-    for vulnerability in trl_data.vulnerabilities.vulnerability:
+    for vulnerability in vulnerability:
 
         logger.debug('Adjusting priority of {}'.format(
             vulnerability.get('cveID')))
@@ -74,7 +61,7 @@ def _rescore(vulnerability):
             modified_score = 0
         # set the modified score
         vulnerability.set('CVSSTemporalScore', str(modified_score))
-    logger.debug('Completed adjustments to TRL.')
+    logger.debug('Completed adjustments to file.')
     return trl_data
 
 

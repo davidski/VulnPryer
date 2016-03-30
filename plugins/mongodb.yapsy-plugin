@@ -1,6 +1,6 @@
 [Core]
 Name = MongoDB
-Module = store
+Module = Store
 
 [Documentation]
 Author = David F. Severski
