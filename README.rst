@@ -1,100 +1,94 @@
-|Build Status|
+|Build Status| |PyPI Version|
 
+=========
 VulnPryer
 =========
 
-Vulnerability Pryer - Pries more context into your vulnerability data.
+Vulnerability Pryer - Prying context into your vulnerability data.
 
 Description
 ===========
 
-VulnPryer is the code behind a `vulnerability reprioritization
-project <http://blog.severski.net/2014/08/introducing-vulnpryer.html>`__.
-Using a vulnerability data feed (VulnPryer uses the VulnDB commercial
-project by default), VulnPryer will download that feed on an incremental
-basis, load the feed into MongoDB for storage, extract a mapping of
-features, and provide a remapping of vulnerabilities to custom
-severities for importing into your analysis product of choice (VulnPryer
-targets the `RedSeal <https://www.redsealnetworks.com/>`__ platform by
-default).
+VulnPryer is the code behind a `vulnerability reprioritization project
+<http://blog.severski.net/2014/08/introducing-vulnpryer.html>`__.
+
+With access to a vulnerability data feed (the VulnDB commercial project by default), VulnPryer downloads the feed on
+an incremental (daily) basis, populates a MongoDB data store, extracts features on all known vulnerabilities, adjusts
+the publicly published severities of vulnerabilities based upon factors of interest to the user's
+organization, and generates a mapping of the organization-specific vulnerabilities for importing into your
+vulnerability management platform of choice (VulnPryer defaults to the `RedSeal <https://www.redseal.net/>`__ platform
+by default).
 
 Installation
 ============
 
-VulnPryer may be set up the hard (manual) way and the easy (automated)
-way.
+VulnPryer may be set up the manually or via several automated methods.
 
 Manual Installation
 -------------------
 
 1. Setup an instance of MongoDB (authentication not currently supported)
-2. git clone https://github.com/davidski/VulnPryer vulnpryer
-3. cd ./vulnpryer
-4. pip install -r requirements
-5. cp vulnpryer.conf{.sample,}
-6. vi vulnpryer.conf #modify with your settings and credentials.
+2. pip install vulnpryer
+3. cp vulnpryer.conf{.sample,}
+4. vi vulnpryer.conf #modify with your settings and credentials.
+5. Schedule vulnrpyer.py via crontab
 
 Automated Installation
 ----------------------
 
-1. Use the
-   `chef-vulnpryer <https://github.com/davidski/chef-vulnpryer>`__
-   cookbook to set up a full stack with all your dependencies resolved.
-2. Profit!
+Choices:
+1. The `chef-vulnpryer <https://github.com/davidski/chef-vulnpryer>`__ Chef
+   cookbook sets up a full stack with all your dependencies resolved.
+2. Docker image (TBD)
 
 Usage
 =====
 
-VulnPryer targets running daily extracts out of VulnDB and generating
-updated RedSeal Threat Reference Library files with modified CVSS
-ratings on an Amazon S3 bucket. This is accomplished via the ``vulndb``
-module for working with the VulnDB API, the ``shiploader`` module for
-loading that data into MongoDB and creating feature extracts, and the
-``forklift`` module for taking the feature file and applying a custom
+VulnPryer polls daily updates from VulnDB and generates an updated RedSeal Threat Reference Library file with
+CVSS scores adjusted to a customized version for posting on an Amazon S3 bucket. This is accomplished via the
+``vulndb`` module for working with the VulnDB API, the ``shiploader`` module for loading that data into MongoDB and
+creating feature extracts, and the ``forklift`` module for taking the feature file and applying a custom
 formula for creating vulnerability severities and generating TRL files.
 
-The simplest means is to run the ``vulnpryer.py`` wrapper script. If you
-want to replace indlvidual modules (e.g. to use a different
-prioritization scheme, import a different vulnerability data feed), you
-can run the individual compoents manually:
+The simplest means is to run the ``vulnpryer.py`` wrapper script. If you want to replace individual modules (e.g. to
+use a different prioritization scheme, import a different vulnerability data feed), you can run the individual
+components manually:
 
 1. vulndb.py
 2. shiploader.py
 3. forklift.py
 
-Dependencies
-============
+Authors and Collaborators
+=========================
 
-VulnPryer relies on the following third-party libraries. Note that newer
-versions of these libraries may be available, but have not been tested.
+VulnPryer is the creation of:
 
-argparse >= 1.2.1 [http://code.google.com/p/argparse/ - Now part of
-Python, version 2.7, 3.2, or higher] boto >= 2.32.1
-[https://github.com/boto/boto] filechunkio >= 1.5
-[https://bitbucket.org/fabian/filechunkio] lxml >= 3.3.5
-[http://lxml.de/] oauth2 >= 1.5.211 [http://oauth.net/2/] pandas >=
-0.13.1 [http://pandas.pydata.org/] pymongo >= 2.7.2
-[http://api.mongodb.org/python/current/] restkit >= 4.2.2
-[http://restkit.org/] simplejson >= 3.6.2
-[https://pypi.python.org/pypi/simplejson/]
+- David F. Severski (code creation)
+- Kymberlee Price ([@kym_possible](https://twitter.com/kym_possible))
+- Michael Roytman ([@mroytman](https://twitter.com/mroytman))
+
+Sponsorship
+===========
+
+RBS has generously supported continued development of the VulnPryer project, providing technical assistance with the
+VulnDB interface.
 
 Acknowledgements
 ================
 
-VulnPryer would not exist without the inspiration and assistance of the
-following individuals and organizations: 
-- [@alexcpsec](https://twitter.com/alexcpsec) and
-[@kylemaxwell](https://twitter.com/alexcpsec) for the
-`combine <https://github.com/mlsecproject/combine>`__ project. VulnPryer
-has cribbed heavily from that design pattern, including a crude aping of
-naming metaphors. :grin:
-- `Risk Based Security <https://vulndb.cyberriskanalytics.com/>`__ (RBS) for providing
-the VulnDB product and for the support in getting this project off the
-ground.
-- `Risk I/O <https://www.risk.io/>`__ for providing the
-inspiration on this project and their continued support of the
-community.
-- `RedSeal <https://www.redsealnetworks.com>`__ for providing the analysis platform for network security posture review and analysis.
+VulnPryer would not exist without the inspiration and assistance of the following individuals and organizations:
 
-.. |Build Status| image:: https://secure.travis-ci.org/SCH-CISM/VulnPryer.png
-   :target: http://travis-ci.org/SCH-CISM/VulnPryer
+- [@alexcpsec](https://twitter.com/alexcpsec) and [@kylemaxwell](https://twitter.com/alexcpsec) for the
+`combine <https://github.com/mlsecproject/combine>`__ project. VulnPryer has cribbed heavily from the combine design
+pattern, including a crude aping of naming metaphors. :grin:
+- `Risk Based Security <https://vulndb.cyberriskanalytics.com/>`__ (RBS) for providing the VulnDB product and for the
+support in getting this project off the ground.
+- `Kenna Security <https://www.kennasecurity.com>`__ for providing the inspiration on this project and their
+continued support of the community.
+- `RedSeal <https://www.redseal.net>`__ for providing the analysis platform for network security posture
+review and analysis.
+
+.. |Build Status| image:: https://secure.travis-ci.org/davidski/VulnPryer.png
+   :target: http://travis-ci.org/davidski/VulnPryer
+.. |PyPI Version| image:: https://img.shields.io/pypi/v/VulnPryer.svg
+   :target:  https://pypi.python.org/pypi/pypi/VulnPryer
