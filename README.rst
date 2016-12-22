@@ -78,15 +78,15 @@ Acknowledgements
 
 VulnPryer would not exist without the inspiration and assistance of the following individuals and organizations:
 
-- `@alexcpsec <https://twitter.com/alexcpsec>`__ and `@kylemaxwell <https://twitter.com/alexcpsec>`__ for the
-`combine <https://github.com/mlsecproject/combine>`__ project. VulnPryer has cribbed heavily from the combine design
-pattern, including a crude aping of naming metaphors. :grin:
+- `@alexcpsec <https://twitter.com/alexcpsec>`__ and `@kylemaxwell <https://twitter.com/alexcpsec>`__ for
+  the `combine <https://github.com/mlsecproject/combine>`__ project. VulnPryer has cribbed heavily from the combine
+  design pattern, including a crude aping of naming metaphors. :grin:
 - `Risk Based Security <https://vulndb.cyberriskanalytics.com/>`__ (RBS) for providing the VulnDB product and for the
-support in getting this project off the ground.
+  support in getting this project off the ground.
 - `Kenna Security <https://www.kennasecurity.com>`__ for providing the inspiration on this project and their
-continued support of the community.
+  continued support of the community.
 - `RedSeal <https://www.redseal.net>`__ for providing the analysis platform for network security posture
-review and analysis.
+  review and analysis.
 
 .. |Build Status| image:: https://secure.travis-ci.org/davidski/VulnPryer.png
    :target: http://travis-ci.org/davidski/VulnPryer
