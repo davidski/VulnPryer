@@ -1,20 +1,22 @@
 #!/usr/bin/env python
 
-import ConfigParser
-from lxml import objectify
-import gzip
-import urllib2
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+from builtins import *
+
+from configparser import ConfigParser
+from lxml import objectify, etree
+import urllib2.request
 import base64
 import os
-from lxml import etree
-import pandas as pd
 import logging
 import tempfile
 import re
+import boto3
 
 logger = logging.getLogger('vulnpryer.forklift')
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('vulnpryer.conf')
 
 trl_source_url = config.get('RedSeal', 'trl_url')
@@ -46,7 +48,7 @@ def get_trl(trl_path):
 
     req = urllib2.Request(trl_source_url)
     base64str = base64.encodestring('%s:%s' % (username,
-                                    password)).replace('\n', '')
+                                               password)).replace('\n', '')
     req.add_header("Authorization", "Basic %s" % base64str)
     result = urllib2.urlopen(req)
 
@@ -85,28 +87,28 @@ def _remap_trl(trl_data, vulndb):
                                            avg_cvss_score) / avg_cvss_score
         # adjust up if metasploit module exists
         if vulndb[vulndb['CVE_ID'] ==
-                  vulnerability.get('cveID')].msp.any >= 1:
-                    modified_score = modified_score + msp_factor
+                vulnerability.get('cveID')].msp.any >= 1:
+            modified_score = modified_score + msp_factor
         # adjust up if exploit DB entry exists
         if vulndb[vulndb['CVE_ID'] ==
-                  vulnerability.get('cveID')].edb.any >= 1:
-                    modified_score = modified_score + edb_factor
+                vulnerability.get('cveID')].edb.any >= 1:
+            modified_score = modified_score + edb_factor
         # adjust up if a private exploit is known
         if vulndb[vulndb['CVE_ID'] ==
-                  vulnerability.get('cveID')].private_exploit.any >= 1:
-                    modified_score = modified_score + private_exploit_factor
+                vulnerability.get('cveID')].private_exploit.any >= 1:
+            modified_score = modified_score + private_exploit_factor
         else:
             modified_score = modified_score - private_exploit_factor
         # adjust down for impacts that aren't relevant to our loss scenario
         if (vulndb[vulndb['CVE_ID'] ==
             vulnerability.get('cveID')].impact_integrity.any < 1 and
-            vulndb[vulndb['CVE_ID'] ==
-                   vulnerability.get('cveID')].impact_confidentiality.any < 1):
-                modified_score = modified_score - impact_factor
+                    vulndb[vulndb['CVE_ID'] ==
+                        vulnerability.get('cveID')].impact_confidentiality.any < 1):
+            modified_score = modified_score - impact_factor
         # adjust down for attack vectors that aren't in our loss scenario
         if vulndb[vulndb['CVE_ID'] ==
-                  vulnerability.get('cveID')].network_vector.any < 1:
-                    modified_score = modified_score - network_vector_factor
+                vulnerability.get('cveID')].network_vector.any < 1:
+            modified_score = modified_score - network_vector_factor
         # confirm that our modified score is within max/min limits
         if modified_score > 10:
             modified_score = 10
@@ -160,10 +162,9 @@ def post_trl(file_path):
     from filechunkio import FileChunkIO
     import math
     import os
-    import boto.s3
-    conn = boto.s3.connect_to_region(s3_region)
+    conn = boto3.resource('s3')
 
-    bucket = conn.get_bucket(s3_bucket, validate=False)
+    bucket = conn.Bucket(s3_bucket, validate=False)
 
     logger.info('Uploading {} to Amazon S3 bucket {}'.format(
         file_path, s3_bucket))
@@ -195,6 +196,7 @@ def post_trl(file_path):
     #   encrypt_key=True, policy='public-read')
 
     return
+
 
 if __name__ == "__main__":
     modify_trl('/tmp/trl.gz')

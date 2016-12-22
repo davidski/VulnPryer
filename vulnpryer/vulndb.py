@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+from builtins import *
+
 from restkit import OAuthFilter, request
 import simplejson as json
 import oauth2
 from datetime import date, timedelta
 import logging
-import ConfigParser
+from configparser import ConfigParser
 
 logger = logging.getLogger('vulnpryer.vulndb')
 
@@ -44,11 +48,11 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
 
     while not finished:
         url = 'https://vulndb.cyberriskanalytics.com' + \
-            '/api/v1/vulnerabilities/find_by_date?' + \
-            'start_date=' + from_date + '&end_date=' + to_date + '&page=' + \
-            str(page_counter) + '&size=' + str(page_size) + \
-            '&date_type=updated_on' + \
-            '&nested=true'
+              '/api/v1/vulnerabilities/find_by_date?' + \
+              'start_date=' + from_date + '&end_date=' + to_date + '&page=' + \
+              str(page_counter) + '&size=' + str(page_size) + \
+              '&date_type=updated_on' + \
+              '&nested=true'
         logger.debug("Working on url: {} ".format(url))
 
         resp = request(url, filters=[auth])
@@ -64,7 +68,7 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
         """parse response and append to working set"""
         page_reply = json.loads(resp.body_string())
         logger.debug("Retrieving page {} of {}.".format(page_counter,
-                     -(-page_reply['total_entries'] // page_size)))
+                                                        -(-page_reply['total_entries'] // page_size)))
 
         if len(page_reply['results']) < page_size:
             finished = True
@@ -101,9 +105,10 @@ def query_vulndb(from_date, to_date, day_interval=1):
         reply = _fetch_data(window_start, window_end, page_size)
 
         with io.open(json_directory + 'data_' + window_start.strftime(
-                     "%Y-%m-%d") + '.json', 'w', encoding='utf-8') as f:
-                    f.write(unicode(json.dumps(reply, ensure_ascii=False)))
-                    f.close
+                "%Y-%m-%d") + '.json', 'w', encoding='utf-8') as f:
+            f.write(json.dumps(reply, ensure_ascii=False))
+            f.close
+
 
 if __name__ == "__main__":
     """Pull in the previous day's events by default"""

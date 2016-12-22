@@ -24,6 +24,7 @@ def mkdate(datestr):
     else:
         return datestr
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-e', '--enddate', type=mkdate, default=to_date,
                     help="Start date.")

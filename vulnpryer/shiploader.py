@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
-import ConfigParser
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+from builtins import *
+
+from configparser import ConfigParser
 from pymongo import MongoClient
 import csv
 import simplejson as json
@@ -11,7 +15,7 @@ import os
 
 logger = logging.getLogger('vulnpryer.shiploader')
 
-config = ConfigParser.ConfigParser()
+config = configparser.ConfigParser()
 config.read('vulnpryer.conf')
 
 mongo_host = config.get('Mongo', 'hostname')
@@ -27,7 +31,7 @@ collection = db.osvdb
 def _decode_list(data):
     rv = []
     for item in data:
-        if isinstance(item, unicode):
+        if isinstance(item, str):
             item = item.encode('utf-8')
         elif isinstance(item, list):
             item = _decode_list(item)
@@ -40,9 +44,9 @@ def _decode_list(data):
 def _decode_dict(data):
     rv = {}
     for key, value in data.iteritems():
-        if isinstance(key, unicode):
+        if isinstance(key, str):
             key = key.encode('utf-8')
-        if isinstance(value, unicode):
+        if isinstance(value, str):
             value = value.encode('utf-8')
         elif isinstance(value, list):
             value = _decode_list(value)
@@ -64,7 +68,7 @@ def load_mongo(json_glob_pattern):
             # objects-instead-unicode-ones-from-json-in-python
             data = json.loads(json_data, object_hook=_decode_dict)
         except:
-            print sys.argv[0], " Unexpected error:", sys.exc_info()[1]
+            print(sys.argv[0], " Unexpected error:", sys.exc_info()[1])
         if data is None:
             continue
         for vulndb in data['results']:
@@ -90,7 +94,7 @@ def _map_osvdb_to_cve():
     ])
     for entry in results['result']:
         db.osvdb.update({"_id": entry['_id']}, {"$set":
-                        {"CVE_ID": entry['CVE_ID']}})
+                                                    {"CVE_ID": entry['CVE_ID']}})
         logger.info("Adding CVEs to {}".format(entry['_id']))
 
 
@@ -115,26 +119,26 @@ def _run_aggregation():
         {"$unwind": "$cvss_metrics"},
         {"$project": {"CVE_ID": 1, "ext_references": 1,
                       "cvss_score":
-                      "$cvss_metrics.calculated_cvss_base_score",
+                          "$cvss_metrics.calculated_cvss_base_score",
                       "classifications": {"$cond": {
-                                          "if": {"$eq": [{"$size":
-                                                 "$classifications"}, 0]},
-                                          "then": ["bogus"],
-                                          "else": "$classifications"}}}},
+                          "if": {"$eq": [{"$size":
+                                              "$classifications"}, 0]},
+                          "then": ["bogus"],
+                          "else": "$classifications"}}}},
         {"$unwind": "$classifications"},
         {"$unwind": "$ext_references"},
         {"$group": {
             "_id": {"_id": "$_id", "CVE_ID": {"$concat":
-                    ["CVE-", "$CVE_ID"]}},
+                                                  ["CVE-", "$CVE_ID"]}},
             "public_exploit": {"$sum": {"$cond": [
                 {"$eq": ["$classifications.name", "exploit_public"]}, 1, 0]}},
             "private_exploit": {"$sum": {"$cond": [
                 {"$eq": ["$classifications.name", "exploit_private"]}, 1, 0]}},
             "cvss_score": {"$max": "$cvss_score"},
             "msp": {"$sum": {"$cond": [{"$eq": ["$ext_references.type",
-                    "Metasploit URL"]}, 1, 0]}},
+                                                "Metasploit URL"]}, 1, 0]}},
             "edb": {"$sum": {"$cond": [{"$eq": ["$ext_references.type",
-                    "Exploit Database"]}, 1, 0]}},
+                                                "Exploit Database"]}, 1, 0]}},
             "network_vector": {"$sum": {"$cond": [{"$eq": [
                 "$classifications.name", "location_remote"]}, 1, 0]}},
             "impact_integrity": {"$sum": {"$cond": [
@@ -157,7 +161,7 @@ def _run_aggregation():
         results.append(doc)
 
     logger.info("There are {} entries in this aggregation.".format(
-                len(results)))
+        len(results)))
     logger.debug("The headers are: {}".format(results[0].keys()))
     return results
 
@@ -172,7 +176,7 @@ def _calculate_mean_cvss():
         }}
     ])
     logger.info("There are {} entries in this aggregation.".format(
-                len(results['result'])))
+        len(results['result'])))
     logger.debug("The headers are: {}".format(results['result'][0].keys()))
     try:
         avgCVSS = results['result'][0]['avgCVSS']
@@ -183,6 +187,7 @@ def _calculate_mean_cvss():
 
 class _DictUnicodeProxy(object):
     """Create helper function for writing unicode to CSV"""
+
     def __init__(self, d):
         self.d = d
 
@@ -193,7 +198,7 @@ class _DictUnicodeProxy(object):
         i = self.d.get(item, default)
         if isinstance(i, list):
             i = i[0]
-        if isinstance(i, unicode):
+        if isinstance(i, str):
             return i.encode('utf-8')
         return i
 
@@ -217,6 +222,7 @@ def _write_vulndb(results, filename):
 def get_extract(extract_file):
     results = _run_aggregation()
     _write_vulndb(results, extract_file)
+
 
 if __name__ == "__main__":
     """Read in all the json files"""
