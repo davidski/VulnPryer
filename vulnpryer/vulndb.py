@@ -2,7 +2,7 @@
 
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
-from builtins import *
+# from builtins import *
 
 from restkit import OAuthFilter, request
 import simplejson as json
@@ -67,8 +67,9 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
 
         """parse response and append to working set"""
         page_reply = json.loads(resp.body_string())
-        logger.debug("Retrieving page {} of {}.".format(page_counter,
-                                                        -(-page_reply['total_entries'] // page_size)))
+        logger.debug("Retrieving page {} of {}."
+                     .format(page_counter,
+                             -(-page_reply['total_entries'] // page_size)))
 
         if len(page_reply['results']) < page_size:
             finished = True

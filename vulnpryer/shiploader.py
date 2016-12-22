@@ -2,7 +2,7 @@
 
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
-from builtins import *
+# from builtins import *
 
 from configparser import ConfigParser
 from pymongo import MongoClient
@@ -15,7 +15,7 @@ import os
 
 logger = logging.getLogger('vulnpryer.shiploader')
 
-config = configparser.ConfigParser()
+config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
 
 mongo_host = config.get('Mongo', 'hostname')
@@ -93,8 +93,8 @@ def _map_osvdb_to_cve():
         {"$group": {"_id": "$_id", "CVE_ID": {"$addToSet": "$CVE_ID"}}}
     ])
     for entry in results['result']:
-        db.osvdb.update({"_id": entry['_id']}, {"$set":
-                                                    {"CVE_ID": entry['CVE_ID']}})
+        db.osvdb.update({"_id": entry['_id']},
+                        {"$set": {"CVE_ID": entry['CVE_ID']}})
         logger.info("Adding CVEs to {}".format(entry['_id']))
 
 
@@ -121,15 +121,13 @@ def _run_aggregation():
                       "cvss_score":
                           "$cvss_metrics.calculated_cvss_base_score",
                       "classifications": {"$cond": {
-                          "if": {"$eq": [{"$size":
-                                              "$classifications"}, 0]},
+                          "if": {"$eq": [{"$size": "$classifications"}, 0]},
                           "then": ["bogus"],
                           "else": "$classifications"}}}},
         {"$unwind": "$classifications"},
         {"$unwind": "$ext_references"},
         {"$group": {
-            "_id": {"_id": "$_id", "CVE_ID": {"$concat":
-                                                  ["CVE-", "$CVE_ID"]}},
+            "_id": {"_id": "$_id", "CVE_ID": {"$concat": ["CVE-", "$CVE_ID"]}},
             "public_exploit": {"$sum": {"$cond": [
                 {"$eq": ["$classifications.name", "exploit_public"]}, 1, 0]}},
             "private_exploit": {"$sum": {"$cond": [

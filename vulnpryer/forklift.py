@@ -2,7 +2,7 @@
 
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
-from builtins import *
+# from builtins import *
 
 from configparser import ConfigParser
 from lxml import objectify, etree
@@ -13,10 +13,11 @@ import logging
 import tempfile
 import re
 import boto3
-
+import gzip
+import csv
 logger = logging.getLogger('vulnpryer.forklift')
 
-config = configparser.ConfigParser()
+config = ConfigParser.ConfigParser()
 config.read('vulnpryer.conf')
 
 trl_source_url = config.get('RedSeal', 'trl_url')
@@ -61,8 +62,10 @@ def get_trl(trl_path):
 
 def _read_vulndb_extract():
     """read in the extracted VulnDB data"""
-    vulndb = pd.read_csv(temp_directory + 'vulndb_export.csv')
-    return vulndb
+    with open(temp_directory + 'vulndb_export.csv') as f:
+        vulndb = csv.reader(f)
+        for row in vulndb:
+            yield(row)
 
 
 def _remap_trl(trl_data, vulndb):
@@ -86,28 +89,27 @@ def _remap_trl(trl_data, vulndb):
         modified_score = modified_score + (modified_score -
                                            avg_cvss_score) / avg_cvss_score
         # adjust up if metasploit module exists
-        if vulndb[vulndb['CVE_ID'] ==
-                vulnerability.get('cveID')].msp.any >= 1:
+        if vulndb[vulndb['CVE_ID'] == vulnerability.get('cveID')].msp.any >= 1:
             modified_score = modified_score + msp_factor
         # adjust up if exploit DB entry exists
-        if vulndb[vulndb['CVE_ID'] ==
-                vulnerability.get('cveID')].edb.any >= 1:
+        if vulndb[vulndb['CVE_ID'] == vulnerability.get('cveID')].edb.any >= 1:
             modified_score = modified_score + edb_factor
         # adjust up if a private exploit is known
-        if vulndb[vulndb['CVE_ID'] ==
-                vulnerability.get('cveID')].private_exploit.any >= 1:
-            modified_score = modified_score + private_exploit_factor
+        if vulndb[vulndb['CVE_ID'] == vulnerability.get('cveID')]\
+                .private_exploit.any >= 1:
+                modified_score = modified_score + private_exploit_factor
         else:
             modified_score = modified_score - private_exploit_factor
         # adjust down for impacts that aren't relevant to our loss scenario
         if (vulndb[vulndb['CVE_ID'] ==
             vulnerability.get('cveID')].impact_integrity.any < 1 and
-                    vulndb[vulndb['CVE_ID'] ==
-                        vulnerability.get('cveID')].impact_confidentiality.any < 1):
+                vulndb[vulndb['CVE_ID'] ==
+                       vulnerability.get('cveID')]
+                .impact_confidentiality.any < 1):
             modified_score = modified_score - impact_factor
         # adjust down for attack vectors that aren't in our loss scenario
         if vulndb[vulndb['CVE_ID'] ==
-                vulnerability.get('cveID')].network_vector.any < 1:
+                  vulnerability.get('cveID')].network_vector.any < 1:
             modified_score = modified_score - network_vector_factor
         # confirm that our modified score is within max/min limits
         if modified_score > 10:

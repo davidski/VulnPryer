@@ -28,7 +28,7 @@ Manual Installation
 -------------------
 
 1. Setup an instance of MongoDB (authentication not currently supported)
-2. git clone https://github.com/SCH-CISM/VulnPryer vulnpryer
+2. git clone https://github.com/davidski/VulnPryer vulnpryer
 3. cd ./vulnpryer
 4. pip install -r requirements
 5. cp vulnpryer.conf{.sample,}
@@ -38,7 +38,7 @@ Automated Installation
 ----------------------
 
 1. Use the
-   `chef-vulnpryer <https://github.com/SCH-CISM/chef-vulnpryer>`__
+   `chef-vulnpryer <https://github.com/davidski/chef-vulnpryer>`__
    cookbook to set up a full stack with all your dependencies resolved.
 2. Profit!
 
@@ -82,18 +82,19 @@ Acknowledgements
 ================
 
 VulnPryer would not exist without the inspiration and assistance of the
-following individuals and organizations: -
-[@alexcpsec](https://twitter.com/alexcpsec) and
+following individuals and organizations: 
+- [@alexcpsec](https://twitter.com/alexcpsec) and
 [@kylemaxwell](https://twitter.com/alexcpsec) for the
 `combine <https://github.com/mlsecproject/combine>`__ project. VulnPryer
 has cribbed heavily from that design pattern, including a crude aping of
-naming metaphors. :grin: - `Risk Based
-Security <https://vulndb.cyberriskanalytics.com/>`__ (RBS) for providing
+naming metaphors. :grin:
+- `Risk Based Security <https://vulndb.cyberriskanalytics.com/>`__ (RBS) for providing
 the VulnDB product and for the support in getting this project off the
-ground. - `Risk I/O <https://www.risk.io/>`__ for providing the
+ground.
+- `Risk I/O <https://www.risk.io/>`__ for providing the
 inspiration on this project and their continued support of the
-community. - `RedSeal <https://www.redsealnetworks.com>`__ for providing
-the analysis platform for network security posture review and analysis.
+community.
+- `RedSeal <https://www.redsealnetworks.com>`__ for providing the analysis platform for network security posture review and analysis.
 
 .. |Build Status| image:: https://secure.travis-ci.org/SCH-CISM/VulnPryer.png
    :target: http://travis-ci.org/SCH-CISM/VulnPryer
