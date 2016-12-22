@@ -111,6 +111,7 @@ def query_vulndb(from_date, to_date, day_interval=1):
             f.write(json.dumps(reply, ensure_ascii=False))
             f.close
 
+
 if __name__ == "__main__":
     """Pull in the previous day's events by default"""
 

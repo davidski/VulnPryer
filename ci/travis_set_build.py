@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Update the version string with a build number.
-	 Pattern courtesy of https://gist.github.com/lorengordon/ebe731b43a73b62f52a83c386b38246a"""
+   Pattern courtesy of
+   https://gist.github.com/lorengordon/ebe731b43a73b62f52a83c386b38246a"""
 
 from __future__ import absolute_import
 from __future__ import print_function
@@ -9,7 +10,6 @@ from __future__ import print_function
 import io
 import os
 import re
-
 
 PROJECT_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(os.path.abspath(__file__)),
@@ -58,6 +58,7 @@ def main(args):
 
 if '__main__' == __name__:
     import argparse
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         '--skip',
