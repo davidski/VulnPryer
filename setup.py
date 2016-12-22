@@ -7,9 +7,19 @@ setup(
     version='0.0.1',
     author='David F. Severski',
     author_email='davidski@deadheaven.com',
+    description='Prying context into your vulnerability information.',
     packages=['vulnpryer'],
     long_description=open('README.rst').read(),
     url='https://github.com/davidski/vulnpryer',
+    license='MIT',
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Information Technology',
+        'License :: OSI Approved :: MIT License',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.5',
+        'Topic :: Security'
+    ],
     install_requires=[
         "boto3 >= 1.4.0",
         "filechunkio >= 1.8.0",
@@ -18,4 +28,7 @@ setup(
         "pymongo >= 3.4.0",
         "simplejson >= 3.10.0",
     ],
+    scripts=['bin/vulnpryer'],
+    include_package_data=True,
+    keywords='security vulnerability vulndb redseal'
 )

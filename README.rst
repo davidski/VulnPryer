@@ -29,9 +29,9 @@ Manual Installation
 
 1. Setup an instance of MongoDB (authentication not currently supported)
 2. pip install vulnpryer
-3. cp vulnpryer.conf{.sample,}
-4. vi vulnpryer.conf #modify with your settings and credentials.
-5. Schedule vulnrpyer.py via crontab
+3. cp /etc/vulnpryer.conf{.sample,}
+4. vi /etc/vulnpryer.conf #modify with your settings and credentials.
+5. Schedule vulnpryer via crontab
 
 Automated Installation
 ----------------------
@@ -50,9 +50,9 @@ CVSS scores adjusted to a customized version for posting on an Amazon S3 bucket.
 creating feature extracts, and the ``forklift`` module for taking the feature file and applying a custom
 formula for creating vulnerability severities and generating TRL files.
 
-The simplest means is to run the ``vulnpryer.py`` wrapper script. If you want to replace individual modules (e.g. to
-use a different prioritization scheme, import a different vulnerability data feed), you can run the individual
-components manually:
+The simplest installation is scheduling the provided ``vulnpryer`` command line utility to run on a daily
+basis. If you want to replace individual modules (e.g. to use a different prioritization scheme, import a different
+vulnerability data feed), you can run the individual components manually:
 
 1. vulndb.py
 2. shiploader.py
@@ -64,8 +64,8 @@ Authors and Collaborators
 VulnPryer is the creation of:
 
 - David F. Severski (code creation)
-- Kymberlee Price ([@kym_possible](https://twitter.com/kym_possible))
-- Michael Roytman ([@mroytman](https://twitter.com/mroytman))
+- Kymberlee Price `@kym_possible <https://twitter.com/kym_possible>`__
+- Michael Roytman `@mroytman <https://twitter.com/mroytman>`__
 
 Sponsorship
 ===========
@@ -78,7 +78,7 @@ Acknowledgements
 
 VulnPryer would not exist without the inspiration and assistance of the following individuals and organizations:
 
-- [@alexcpsec](https://twitter.com/alexcpsec) and [@kylemaxwell](https://twitter.com/alexcpsec) for the
+- `@alexcpsec <https://twitter.com/alexcpsec>`__ and `@kylemaxwell <https://twitter.com/alexcpsec>`__ for the
 `combine <https://github.com/mlsecproject/combine>`__ project. VulnPryer has cribbed heavily from the combine design
 pattern, including a crude aping of naming metaphors. :grin:
 - `Risk Based Security <https://vulndb.cyberriskanalytics.com/>`__ (RBS) for providing the VulnDB product and for the
