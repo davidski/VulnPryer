@@ -7,6 +7,9 @@ from dateutil.parser import parse
 import logging
 import sys
 
+# for scheduling
+from crontab import CronTab
+
 # VulnDB components
 from vulnpryer.vulndb import query_vulndb
 from vulnpryer.shiploader import load_mongo, get_extract
@@ -25,51 +28,70 @@ def mkdate(datestr):
         return datestr
 
 
+
+def schedule():
+    """"Schedule vulnpryer in crontab"""
+    user_cron = CronTab(user=True)
+    job = cron.new(command='vulnpryer', comment='VulnPryer load')
+    job.day.every(1)
+    cron.write()
+
+
+def process():
+    """execute daily processing"""
+    start_string = args.startdate
+    start_string = start_string.strftime("%Y-%m-%d")
+    end_string = args.enddate
+    end_string = end_string.strftime("%Y-%m-%d")
+
+    # set logging level
+    numeric_level = getattr(logging, args.loglevel.upper(), None)
+    if not isinstance(numeric_level, int):
+        raise ValueError('Invalid log level; %s' % args.loglevel)
+    logging.basicConfig(stream=sys.stdout,
+                        level=numeric_level,
+                        format='%(asctime)s %(name)s %(levelname)s %(message)s')
+
+    logger = logging.getLogger('vulnpryer')
+    logger.info("Range requested {} - {}".format(start_string, end_string))
+    print("Range requested {} - {}".format(start_string, end_string))
+    query_vulndb(args.startdate, args.enddate)
+
+    logger.info("Loading data into Mongo.")
+    print("Loading data into Mongo.")
+    load_mongo('data_*.json')
+
+    logger.info("Generating extract.")
+    print("Generating extract.")
+    get_extract('/tmp/vulndb_export.csv')
+
+    logger.info("Fetching RedSeal TRL.")
+    print("Fetching RedSeal TRL.")
+    get_trl('/tmp/trl.gz')
+
+    logger.info("Generating modified TRL.")
+    print("Generating modified TRL.")
+    new_trl_path = modify_trl('/tmp/trl.gz')
+
+    logger.info("Posting modified TRL to S3.")
+    print("Posting modified TRL to S3.")
+    post_trl(new_trl_path)
+
+    logger.info("VulnPryer run complete.")
+    print("VulnPryer run complete.")
+
+
 parser = argparse.ArgumentParser()
 parser.add_argument('-e', '--enddate', type=mkdate, default=to_date,
                     help="Start date.")
 parser.add_argument('-s', '--startdate', type=mkdate, default=from_date,
                     help="End date.")
 parser.add_argument('-l', '--loglevel', default="info", help="Log level.")
+parser.add_argument('schedule', help="Schedule vulnpryer in crontab.",
+                    action="store_true")
 args = parser.parse_args()
 
-start_string = args.startdate
-start_string = start_string.strftime("%Y-%m-%d")
-end_string = args.enddate
-end_string = end_string.strftime("%Y-%m-%d")
-
-# set logging level
-numeric_level = getattr(logging, args.loglevel.upper(), None)
-if not isinstance(numeric_level, int):
-    raise ValueError('Invalid log level; %s' % args.loglevel)
-logging.basicConfig(stream=sys.stdout,
-                    level=numeric_level,
-                    format='%(asctime)s %(name)s %(levelname)s %(message)s')
-
-logger = logging.getLogger('vulnpryer')
-logger.info("Range requested {} - {}".format(start_string, end_string))
-print("Range requested {} - {}".format(start_string, end_string))
-query_vulndb(args.startdate, args.enddate)
-
-logger.info("Loading data into Mongo.")
-print("Loading data into Mongo.")
-load_mongo('data_*.json')
-
-logger.info("Generating extract.")
-print("Generating extract.")
-get_extract('/tmp/vulndb_export.csv')
-
-logger.info("Fetching RedSeal TRL.")
-print("Fetching RedSeal TRL.")
-get_trl('/tmp/trl.gz')
-
-logger.info("Generating modified TRL.")
-print("Generating modified TRL.")
-new_trl_path = modify_trl('/tmp/trl.gz')
-
-logger.info("Posting modified TRL to S3.")
-print("Posting modified TRL to S3.")
-post_trl(new_trl_path)
-
-logger.info("VulnPryer run complete.")
-print("VulnPryer run complete.")
+if args.schedule:
+    schedule()
+else:
+    process()

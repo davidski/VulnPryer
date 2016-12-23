@@ -31,21 +31,23 @@ Manual Installation
 2. ``pip install vulnpryer``
 3. ``cp /etc/vulnpryer.conf{.sample,}``
 4. ``vi /etc/vulnpryer.conf`` #modify with your settings and credentials.
-5. Set up the daily schedule via ``vulnpryer schedule`` (TODO)
+5. Set up the daily schedule via ``vulnpryer schedule``
 
 Automated Installation
 ----------------------
 
 Choices:
 
-1. The `chef-vulnpryer <https://github.com/davidski/chef-vulnpryer>`__ Chef
-   cookbook sets up a full stack with all your dependencies resolved.
-2. Docker image (TODO)
+1. Use your configuration manager of choice to ``pip install``, configure the conf file,
+   and set up the crontab entry. A sample Chef cookbook is available at
+   `chef-vulnpryer <https://github.com/davidski/chef-vulnpryer>`__ which has all the
+   dependencies resolved.
+2. Run the VulnPryer Docker image (NOT YET AVAILABLE)
 
 Requirements
 ------------
 
-Python 2.7 or Python 3.5
+Python 2.7, 3.5, or 3.6
 
 Usage
 =====

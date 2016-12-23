@@ -6,8 +6,6 @@ from __future__ import (absolute_import, division,
 
 from configparser import ConfigParser
 from lxml import objectify, etree
-from future.standard_library import hooks
-import base64
 import os
 import logging
 import tempfile
@@ -15,10 +13,8 @@ import re
 import boto3
 import gzip
 import csv
-with hooks():
-    # from urllib.parse import urlparse, urlencode
-    from urllib.request import urlopen, Request
-    # from urllib.error import HTTPError
+# from requests.auth import HTTPBasicAuth
+from requests import request
 
 logger = logging.getLogger('vulnpryer.forklift')
 
@@ -34,11 +30,6 @@ s3_region = config.get('S3', 'region')
 s3_key = config.get('S3', 'key')
 
 
-class HeadRequest(Request):
-    def get_method(self):
-        return "HEAD"
-
-
 def _read_trl(trl_location):
     """Read and Import TRL"""
 
@@ -52,11 +43,7 @@ def _read_trl(trl_location):
 def get_trl(trl_path):
     """Getch the TRL from RedSeal"""
 
-    req = Request(trl_source_url)
-    base64str = base64.encodebytes('%s:%s' % (username,
-                                              password)).replace('\n', '')
-    req.add_header("Authorization", "Basic %s" % base64str)
-    result = urlopen(req)
+    result = request.get(trl_source_url, auth=(username, password))
 
     with open(trl_path, "wb") as local_file:
         local_file.write(result.read())

@@ -4,8 +4,8 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 # from builtins import *
 
-from restkit import OAuthFilter, request
-import restkit.oauth2 as oauth
+from requests import request
+from requests_oauthlib import OAuth1 as oauth
 import simplejson as json
 from datetime import date, timedelta
 import logging
@@ -33,11 +33,9 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
 
     logger.info("Working on date range: {} - {}".format(from_date, to_date))
 
-    consumer = oauth.Consumer(key=consumer_key, secret=consumer_secret)
+    auth = oauth(consumer_key, consumer_secret,
+                 request_token_url)
     # client = oauth2.Client(consumer)
-
-    # now get our request token
-    auth = OAuthFilter('*', consumer)
 
     # initialize the page counter either at the first page or whatever page
     # was requested
@@ -56,7 +54,7 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
               '&nested=true'
         logger.debug("Working on url: {} ".format(url))
 
-        resp = request(url, filters=[auth])
+        resp = request(url, auth=auth)
         if resp.status_int == 404:
             logger.warning("Could not find anything for the week " +
                            "begining: {}".format(from_date))
