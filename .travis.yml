@@ -40,10 +40,12 @@ deploy:
     password:
       secure: "U7h6bE6IQZjBO+aaNQejvugyxFlEv5UeoHx5BAtS5FWgm6+qq0XU/98OyCuApzIxkuViwh8+BIrlZ8jB6+f8tEA6+yklJqVQUxYcxs7vOnyTtCWWBnOZUrsSdAuLBDCrx4JeWEbtq3451yQsr56Cm1ZOxU4wDvInxXvjV0EWWMUD0A4GeWR2FBujCX1ROFWTiw1dIC8xZ+bZGI8DHr7TLHkJXXpCg6xOmf+ArI1h3DWw3W3D+dUVQqaoLzV/WrjxAWHeWcRcotYqF7Uqu5KASWYrKYVe7RCx869WBWbYb0Wmhf1clT+JMDbsrY4sZ3w8YjD4eyH74jeHH+dkL7M/fI1IKyUOABLAgEdGBzl6ZkcxjFBMUcM8/aGcwBgLhm0bKKmFVAqm5OAjNLFkbFMDIQ1ox72iKtXqDCLeDNVsF5iwKmWw6+8Euj89+yOs5U/n/Cmc3YumCuO1FuFV0r05IPTpNkN2mn5oGjjKSEZJ1SVovzcg98Ce3ABfAsVX6y6KnCz1IJ8hN4nEjkL08wbmNenD3ExejQcAaKWyrOUkObwxp/4fPZKookMH2kn4T0arfd+HtwTPMnouUxzKt/FkCRa0Md3FkvcNgWszSvfiIiIngAICUPRvCXDxkG9utskmSE25uyEDD7UN7D57SX8x2fLsyugNzrlpZbZpPGRome8="
     on:
+      tags: true
       branch: dev
       condition: $TRAVIS_PYTHON_VERSION = "3.6"
       
   - provider: pypi
+    server: https://pypi.python.org/pypi
     user: davidski
     skip_cleanup: true
     distributions: "sdist bdist_wheel"
@@ -51,4 +53,5 @@ deploy:
       secure: "pmA/v6ECxgZLM6vMfwGEZen+NeMXCINm/oDf2iTLszjJKZ6hp0ov13JxAOju5b4X1h+lTeYht+q++9qZo87dGwgnbJhQJztddLb1YsJCw+Ryk1FKdqiB9iQp/YF/HNtFjFgcCIEJ/S777QY57VyftoPBTC9biL5Q18udt/MUQWhjW4Y2PvVD7ykmSKzFUr0pJgA8wdaiSC13o/JQqKXDrEVVtKtDicVyvOVaHj6wfMnShVfbbhhGFIqvbVBHTGUsnXbq4ePviiftpblhVH5WzYbsn9v3e6vDAOvypsd/eD8DQqQ+B79rw0sY47Vziz9C3AwRRP+wliZdcZgLa5LrkBhamSraE5NhJIzd4Xzftul0PfQm/FSIaQ5DgUTOqFcec2wxcfB/04GMw+6Ixgf7dSfTmsmD/Qm7f5DcWVxBQzQA+Ybak/Anor+jY2CtB1PrTxlXGs2yq8AoE/GDn8wX3ztWAt60mGY6fN85spc7fiIz+1+gzYCofxcRIncBdOqgx38ulVWXgcZLtlq09MXZrZ1RWhhcLh912XBTyYhxF66EZ+VYm4FSbXtQ3knhR8JnD94ewW7Da7VRzEDxC+TsYXtW6/rlvlFkJ7PU0NcI2cd9jsqrHv3aK3AGp6lHSG6vtOZyQ+V+vELtOfKtj5fJgT3jmEOTw71h7lJb3Ha0P0I="
     on:
       tags: true
+      branch: master
       condition: $TRAVIS_PYTHON_VERSION = "3.6"
