@@ -20,11 +20,12 @@ script: nosetests
 deploy:
   - provider: releases
     api_key:
-      secure: "HfpgzwjL6bVXwrE0Zqex0BxdQlyQ6KysWTE9XBRkiWZwXZ9lv1kfoq4lwrWu13xLKQX2gyKYwKnyrFtqgq5RM/jgypAdxbPdzGeScwCuO0do1dyku+cQcXxF2xHz6Z3N6OvZseSBjCMA5i31VsL6u/K/608enH+ex7PSAd8kqnNuMfkdej1er8FjmKNIvDTSQ5xpaurFUV2k585AA+pgLAiS/LERyvb33a+hj9z2q+wohZx6QjB1ph4moif40rwlCdOddaSv3gXHmOcu3M+GMRgktl8+qFhUpN9QJrADTLMGVkewfDkXX850bWYPaKPmkghnP3fxEW6/hpT1BIjAHZ1vGDMS8yXmR6dTfxfrYuVKww6ScVen1x4DLGEtykQIPtszxiv4/VtOEEtm2HN5AsRATpjq9MTkpJovjP5cWp0AI8ujyyxg+GLFJnrw/DPdDSnyInO87zvkmP48ATQD4UmYS/OCKoA4ONgau4bw2PsAVgIXT4bU3fe2r6WsPMiwsCgSpTIfeodwLOxZhyO1o2hLonWtGr58GDA2KVqxlXObjGP7TnqUkW145Wj1bU08vHxqBgiIxWrTqACLcVZSRVXhlSUqZvZYd8W8TWek7XUlf6sTymKQceYevnoSQaGUA/U3MpWzJ8Sw3czMOq+ZCvoJ4xLQZVL9DlLF7arvRDM="
+      secure: "K8TS3uWwydoqrQ+lQdZbCJ1A9V9BVAZKOn8G1P77cEhZOTLT4a4gPZp+vmQQF2YmJDJUyrd4gqQD8mnvY3aCdqldHHDS9CCCuUgSl7hSK4zDsD6VSuR3zCp6UDuUAWAxzQwmc2Xpeh+xqZfI4CD4IvUQ/bYwDTedRxRwziD90Mw="
     file: "vulnpryer.zip"
     skip_cleanup: true
     on:
       tags: true
+      condition: $TRAVIS_PYTHON_VERSION = "3.6"
 
   - provider: pypi
     server: https://testpypi.python.org/pypi
