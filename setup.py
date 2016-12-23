@@ -2,9 +2,10 @@ from setuptools import setup
 
 setup(
     name='VulnPryer',
+    setup_requires=['setuptools_scm'],
+    use_scm_version=True,
     test_suite='nose.collector',
     tests_require=['nose'],
-    version='0.0.1',
     author='David F. Severski',
     author_email='davidski@deadheaven.com',
     description='Prying context into your vulnerability information.',

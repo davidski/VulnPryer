@@ -3,6 +3,7 @@ language: python
 python:
   - '2.7'
   - '3.5'
+  - '3.6'
 
 services: mongodb
 
@@ -15,9 +16,6 @@ before_script:
   - flake8 .
 
 script: nosetests
-
-before_deploy:
-  - python $TRAVIS_BUILD_DIR/ci/travis_set_build.py --file-paths '("vulnpryer", "__init__.py")' --skip "$TRAVIS_TAG"
 
 deploy:
   - provider: releases
@@ -37,7 +35,7 @@ deploy:
     on:
       tags: false
       branch: dev
-      condition: $TRAVIS_PYTHON_VERSION = "3.5"
+      condition: $TRAVIS_PYTHON_VERSION = "3.6"
       
   - provider: pypi
     user: davidski
@@ -46,4 +44,4 @@ deploy:
       secure: "pmA/v6ECxgZLM6vMfwGEZen+NeMXCINm/oDf2iTLszjJKZ6hp0ov13JxAOju5b4X1h+lTeYht+q++9qZo87dGwgnbJhQJztddLb1YsJCw+Ryk1FKdqiB9iQp/YF/HNtFjFgcCIEJ/S777QY57VyftoPBTC9biL5Q18udt/MUQWhjW4Y2PvVD7ykmSKzFUr0pJgA8wdaiSC13o/JQqKXDrEVVtKtDicVyvOVaHj6wfMnShVfbbhhGFIqvbVBHTGUsnXbq4ePviiftpblhVH5WzYbsn9v3e6vDAOvypsd/eD8DQqQ+B79rw0sY47Vziz9C3AwRRP+wliZdcZgLa5LrkBhamSraE5NhJIzd4Xzftul0PfQm/FSIaQ5DgUTOqFcec2wxcfB/04GMw+6Ixgf7dSfTmsmD/Qm7f5DcWVxBQzQA+Ybak/Anor+jY2CtB1PrTxlXGs2yq8AoE/GDn8wX3ztWAt60mGY6fN85spc7fiIz+1+gzYCofxcRIncBdOqgx38ulVWXgcZLtlq09MXZrZ1RWhhcLh912XBTyYhxF66EZ+VYm4FSbXtQ3knhR8JnD94ewW7Da7VRzEDxC+TsYXtW6/rlvlFkJ7PU0NcI2cd9jsqrHv3aK3AGp6lHSG6vtOZyQ+V+vELtOfKtj5fJgT3jmEOTw71h7lJb3Ha0P0I="
     on:
       tags: true
-      condition: $TRAVIS_PYTHON_VERSION = "3.5"
+      condition: $TRAVIS_PYTHON_VERSION = "3.6"
