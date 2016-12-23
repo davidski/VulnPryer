@@ -42,6 +42,11 @@ Choices:
    cookbook sets up a full stack with all your dependencies resolved.
 2. Docker image (TODO)
 
+Requirements
+------------
+
+Python 2.7 or Python 3.5
+
 Usage
 =====
 

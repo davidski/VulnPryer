@@ -1,5 +1,4 @@
 from setuptools import setup
-from pkg_resources import Requirement, resource_filename
 
 setup(
     name='VulnPryer',
