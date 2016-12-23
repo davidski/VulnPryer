@@ -15,7 +15,7 @@ import os
 
 logger = logging.getLogger('vulnpryer.shiploader')
 
-config = ConfigParser.ConfigParser()
+config = ConfigParser()
 config.read('vulnpryer.conf')
 
 mongo_host = config.get('Mongo', 'hostname')

@@ -28,10 +28,10 @@ Manual Installation
 -------------------
 
 1. Setup an instance of MongoDB (authentication not currently supported)
-2. pip install vulnpryer
-3. cp /etc/vulnpryer.conf{.sample,}
-4. vi /etc/vulnpryer.conf #modify with your settings and credentials.
-5. Schedule vulnpryer via crontab
+2. ``pip install vulnpryer``
+3. ``cp /etc/vulnpryer.conf{.sample,}``
+4. ``vi /etc/vulnpryer.conf`` #modify with your settings and credentials.
+5. Set up the daily schedule via ``vulnpryer schedule`` (TODO)
 
 Automated Installation
 ----------------------
@@ -39,7 +39,7 @@ Automated Installation
 Choices:
 1. The `chef-vulnpryer <https://github.com/davidski/chef-vulnpryer>`__ Chef
    cookbook sets up a full stack with all your dependencies resolved.
-2. Docker image (TBD)
+2. Docker image (TODO)
 
 Usage
 =====
@@ -57,6 +57,14 @@ vulnerability data feed), you can run the individual components manually:
 1. vulndb.py
 2. shiploader.py
 3. forklift.py
+
+Troubleshooting Common Errors
+=============================
+
+VulnPryer depends on the ``lxml`` python package, which in turn has a dependency on ``libxslt2``.
+Windows: Download and install one of the unofficial python ``lxslt`` packages available `here <http://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml>`__.
+Ubuntu: ``apt-get install libxml2-dev libxslt1-dev python-dev``
+
 
 Authors and Collaborators
 =========================

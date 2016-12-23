@@ -8,9 +8,9 @@ import logging
 import sys
 
 # VulnDB components
-from vulndb import query_vulndb
-from shiploader import load_mongo, get_extract
-from forklift import get_trl, modify_trl, post_trl
+from vulnpryer.vulndb import query_vulndb
+from vulnpryer.shiploader import load_mongo, get_extract
+from vulnpryer.forklift import get_trl, modify_trl, post_trl
 
 # set default dates
 to_date = date.today()

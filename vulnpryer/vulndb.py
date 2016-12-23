@@ -14,7 +14,7 @@ from builtins import str
 
 logger = logging.getLogger('vulnpryer.vulndb')
 
-config = ConfigParser.ConfigParser()
+config = ConfigParser()
 config.read('vulnpryer.conf')
 
 consumer_key = config.get('VulnDB', 'consumer_key')

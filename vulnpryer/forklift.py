@@ -6,7 +6,7 @@ from __future__ import (absolute_import, division,
 
 from configparser import ConfigParser
 from lxml import objectify, etree
-import urllib2.request
+from future.standard_library import hooks
 import base64
 import os
 import logging
@@ -15,9 +15,14 @@ import re
 import boto3
 import gzip
 import csv
+with hooks():
+    # from urllib.parse import urlparse, urlencode
+    from urllib.request import urlopen, Request
+    # from urllib.error import HTTPError
+
 logger = logging.getLogger('vulnpryer.forklift')
 
-config = ConfigParser.ConfigParser()
+config = ConfigParser()
 config.read('vulnpryer.conf')
 
 trl_source_url = config.get('RedSeal', 'trl_url')
@@ -29,7 +34,7 @@ s3_region = config.get('S3', 'region')
 s3_key = config.get('S3', 'key')
 
 
-class HeadRequest(urllib2.Request):
+class HeadRequest(Request):
     def get_method(self):
         return "HEAD"
 
@@ -47,11 +52,11 @@ def _read_trl(trl_location):
 def get_trl(trl_path):
     """Getch the TRL from RedSeal"""
 
-    req = urllib2.Request(trl_source_url)
-    base64str = base64.encodestring('%s:%s' % (username,
+    req = Request(trl_source_url)
+    base64str = base64.encodebytes('%s:%s' % (username,
                                                password)).replace('\n', '')
     req.add_header("Authorization", "Basic %s" % base64str)
-    result = urllib2.urlopen(req)
+    result = urlopen(req)
 
     with open(trl_path, "wb") as local_file:
         local_file.write(result.read())
