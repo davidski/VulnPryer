@@ -25,7 +25,7 @@ setup(
     install_requires=[
         "boto3 >= 1.4.0",
         "filechunkio >= 1.8.0",
-        "lxml >= 3.7.0",
+        "lxml >= 3.7.1",
         "oauth2 >= 1.9.0",
         "pymongo >= 3.4.0",
         "simplejson >= 3.10.0",
