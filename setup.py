@@ -37,5 +37,3 @@ setup(
     keywords='security vulnerability vulndb redseal',
     data_files=[('/etc', ['conf/vulnpryer.conf.sample'])],
 )
-
-filename = resource_filename(Requirement.parse("VulnPryer"), "conf/vulnpryer.conf.sample")
