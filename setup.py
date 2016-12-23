@@ -1,4 +1,5 @@
 from setuptools import setup
+from pkg_resources import Requirement, resource_filename
 
 setup(
     name='VulnPryer',
@@ -33,5 +34,8 @@ setup(
     ],
     scripts=['bin/vulnpryer'],
     include_package_data=True,
-    keywords='security vulnerability vulndb redseal'
+    keywords='security vulnerability vulndb redseal',
+    data_files=[('/etc', ['conf/vulnpryer.conf.sample'])],
 )
+
+filename = resource_filename(Requirement.parse("VulnPryer"), "conf/vulnpryer.conf.sample")

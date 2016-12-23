@@ -16,7 +16,7 @@ import os
 logger = logging.getLogger('vulnpryer.shiploader')
 
 config = ConfigParser()
-config.read('vulnpryer.conf')
+config.read('/etc/vulnpryer.conf')
 
 mongo_host = config.get('Mongo', 'hostname')
 temp_directory = config.get('VulnDB', 'working_dir')

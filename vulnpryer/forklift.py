@@ -23,7 +23,7 @@ with hooks():
 logger = logging.getLogger('vulnpryer.forklift')
 
 config = ConfigParser()
-config.read('vulnpryer.conf')
+config.read('/etc/vulnpryer.conf')
 
 trl_source_url = config.get('RedSeal', 'trl_url')
 username = config.get('RedSeal', 'username')

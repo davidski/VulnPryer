@@ -37,6 +37,7 @@ Automated Installation
 ----------------------
 
 Choices:
+
 1. The `chef-vulnpryer <https://github.com/davidski/chef-vulnpryer>`__ Chef
    cookbook sets up a full stack with all your dependencies resolved.
 2. Docker image (TODO)
