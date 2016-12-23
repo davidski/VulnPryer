@@ -69,7 +69,7 @@ Troubleshooting Common Errors
 
 VulnPryer depends on the ``lxml`` python package, which in turn has a dependency on ``libxslt2``.
 Windows: Download and install one of the unofficial python ``lxslt`` packages available `here <http://www.lfd.uci.edu/~gohlke/pythonlibs/#lxml>`__.
-Ubuntu: ``apt-get install libxml2-dev libxslt1-dev python-dev``
+Ubuntu: ``apt-get install libxml2-dev libxslt1-dev python3-dev``
 
 
 Authors and Collaborators

@@ -11,7 +11,7 @@ setup(
     description='Prying context into your vulnerability information.',
     packages=['vulnpryer'],
     long_description=open('README.rst').read(),
-    url='https://github.com/davidski/vulnpryer',
+    url='https://github.com/davidski/VulnPryer',
     license='MIT',
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -19,6 +19,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Security'
     ],
     install_requires=[
