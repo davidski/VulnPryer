@@ -54,7 +54,7 @@ def get_trl(trl_path):
 
     req = Request(trl_source_url)
     base64str = base64.encodebytes('%s:%s' % (username,
-                                               password)).replace('\n', '')
+                                              password)).replace('\n', '')
     req.add_header("Authorization", "Basic %s" % base64str)
     result = urlopen(req)
 
