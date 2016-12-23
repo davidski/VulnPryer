@@ -17,11 +17,16 @@ before_script:
 
 script: nosetests
 
+before_deploy:
+  - export RELEASE_PKG_FILE=$(ls dist/VulnPryer-*.zip)
+  - echo "Deploy target for GitHub is $RELEASE_PKG_FILE"
+
 deploy:
   - provider: releases
     api_key:
       secure: "K8TS3uWwydoqrQ+lQdZbCJ1A9V9BVAZKOn8G1P77cEhZOTLT4a4gPZp+vmQQF2YmJDJUyrd4gqQD8mnvY3aCdqldHHDS9CCCuUgSl7hSK4zDsD6VSuR3zCp6UDuUAWAxzQwmc2Xpeh+xqZfI4CD4IvUQ/bYwDTedRxRwziD90Mw="
-    file: "vulnpryer.zip"
+    file_glob: true
+    file: "dist/VulnPryer-*.zip"
     skip_cleanup: true
     on:
       tags: true
