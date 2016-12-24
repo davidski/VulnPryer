@@ -34,7 +34,7 @@ setup(
         "python-dateutil >= 2.6.0",
         "configparser >= 2.5.0",
         "future >= 0.16.0",
-        "crontab >= 2.1.1"
+        "python-crontab >= 2.1.1"
     ],
     scripts=['bin/vulnpryer'],
     include_package_data=True,

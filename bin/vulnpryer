@@ -32,9 +32,20 @@ def mkdate(datestr):
 def schedule():
     """"Schedule vulnpryer in crontab"""
     user_cron = CronTab(user=True)
-    job = cron.new(command='vulnpryer', comment='VulnPryer load')
+    user_cron.remove_all(comment='VulnPryer load')
+    job = user_cron.new(command='vulnpryer', comment='VulnPryer load')
+    job.hour.on(3)
     job.day.every(1)
-    cron.write()
+    user_cron.write()
+    logger.info("VulnPryer added to user crontab")
+
+
+def unschedule():
+    """"Unschedule vulnpryer"""
+    user_cron = CronTab(user=True)
+    user_cron.remove_all(comment='VulnPryer load')
+    user_cron.write()
+    logger.info("VulnPryer removed from user crontab")
 
 
 def process():
@@ -44,15 +55,6 @@ def process():
     end_string = args.enddate
     end_string = end_string.strftime("%Y-%m-%d")
 
-    # set logging level
-    numeric_level = getattr(logging, args.loglevel.upper(), None)
-    if not isinstance(numeric_level, int):
-        raise ValueError('Invalid log level; %s' % args.loglevel)
-    logging.basicConfig(stream=sys.stdout,
-                        level=numeric_level,
-                        format='%(asctime)s %(name)s %(levelname)s %(message)s')
-
-    logger = logging.getLogger('vulnpryer')
     logger.info("Range requested {} - {}".format(start_string, end_string))
     print("Range requested {} - {}".format(start_string, end_string))
     query_vulndb(args.startdate, args.enddate)
@@ -82,16 +84,31 @@ def process():
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-e', '--enddate', type=mkdate, default=to_date,
+parser.add_argument("command", default="daily", nargs="?",
+                    help="Command to execute (schedule|unschedule|daily).")
+parser.add_argument("-e", "--enddate", type=mkdate, default=to_date,
                     help="Start date.")
-parser.add_argument('-s', '--startdate', type=mkdate, default=from_date,
+parser.add_argument("-s", "--startdate", type=mkdate, default=from_date,
                     help="End date.")
-parser.add_argument('-l', '--loglevel', default="info", help="Log level.")
-parser.add_argument('schedule', help="Schedule vulnpryer in crontab.",
-                    action="store_true")
+parser.add_argument("-l", "--loglevel", default="info", help="Log level.")
 args = parser.parse_args()
 
-if args.schedule:
+# set logging level
+numeric_level = getattr(logging, args.loglevel.upper(), None)
+if not isinstance(numeric_level, int):
+    raise ValueError('Invalid log level; %s' % args.loglevel)
+logging.basicConfig(stream=sys.stdout,
+                    level=numeric_level,
+                    format='%(asctime)s %(name)s %(levelname)s %(message)s')
+
+logger = logging.getLogger('vulnpryer')
+
+if args.command == "schedule":
     schedule()
-else:
+elif args.command == "unschedule":
+    unschedule()
+elif args.command == "daily":
     process()
+else:
+    print("Invalid command option: {}".format(args.command))
+    raise
