@@ -54,7 +54,7 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
               '&nested=true'
         logger.debug("Working on url: {} ".format(url))
 
-        resp = request(url, auth=auth)
+        resp = request(url=url, auth=auth)
         if resp.status_int == 404:
             logger.warning("Could not find anything for the week " +
                            "begining: {}".format(from_date))
