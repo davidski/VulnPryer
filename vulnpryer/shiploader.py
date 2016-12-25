@@ -33,6 +33,7 @@ except errors.ServerSelectionTimeoutError as err:
                  .format(mongo_uri, err))
     raise
 
+
 def _decode_list(data):
     rv = []
     for item in data:
