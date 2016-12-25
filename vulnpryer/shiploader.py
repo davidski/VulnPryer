@@ -2,6 +2,7 @@
 
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
+from future.utils import viewitems
 # from builtins import *
 
 from configparser import ConfigParser
@@ -14,6 +15,7 @@ import logging
 import os
 
 logger = logging.getLogger('vulnpryer.shiploader')
+
 
 config = ConfigParser()
 config.read('/etc/vulnpryer.conf')
@@ -43,11 +45,15 @@ def _decode_list(data):
 
 def _decode_dict(data):
     rv = {}
-    for key, value in data.iteritems():
-        if isinstance(key, str):
-            key = key.encode('utf-8')
-        if isinstance(value, str):
-            value = value.encode('utf-8')
+    for (key, value) in viewitems(data):
+        # if isinstance(key, str):
+        #    key = key.decode('utf-8')
+        if isinstance(key, bytes):
+            key = key.decode('utf-8')
+        if isinstance(value, bytes):
+            value = value.decode('utf-8')
+        # elif isinstance(value, str):
+        #    value = value.decode('utf-8')
         elif isinstance(value, list):
             value = _decode_list(value)
         elif isinstance(value, dict):
@@ -59,9 +65,11 @@ def _decode_dict(data):
 def load_mongo(json_glob_pattern):
     """Load a pattern of JSON files to Mongo"""
     path_to_json = json_directory + json_glob_pattern
+    logger.info("Looking for JSON files matching {}".format(path_to_json))
     for filename in sorted(glob.glob(path_to_json), key=os.path.getmtime):
         logger.info("Working on: {}".format(filename))
         json_data = open(filename).read()
+        data = {}
         try:
             # auto-handling unicode object hook derived from
             # http://stackoverflow.com/questions/956867/how-to-get-string-
@@ -93,7 +101,7 @@ def _map_osvdb_to_cve():
         {"$project": {"CVE_ID": "$ext_references.value"}},
         {"$group": {"_id": "$_id", "CVE_ID": {"$addToSet": "$CVE_ID"}}}
     ])
-    for entry in results['result']:
+    for entry in results:
         db.osvdb.update({"_id": entry['_id']},
                         {"$set": {"CVE_ID": entry['CVE_ID']}})
         logger.info("Adding CVEs to {}".format(entry['_id']))
@@ -204,11 +212,14 @@ class _DictUnicodeProxy(object):
 
 def _write_vulndb(results, filename):
     """Dump output to CSV"""
-    csvfile = open(filename, 'wb')
+    if sys.version_info[0] < 3:
+        csvfile = open(filename, 'wb')
+    else:
+        csvfile = open(filename, 'w', newline='')
 
     # headers = ['CVE_ID', 'OSVDB', 'public_exploit', 'private_exploit',
     # 'cvss_score', 'msp', 'edb', 'network_vector', 'impact_integrity',
-    # 'impact_confidentialit', 'network_vector']
+    # 'impact_confidentiality', 'network_vector']
     headers = results[0].keys()
     csvwriter = csv.DictWriter(csvfile, fieldnames=headers)
     csvwriter.writeheader()
