@@ -15,9 +15,10 @@ from vulnpryer.vulndb import query_vulndb
 from vulnpryer.shiploader import load_mongo, get_extract
 from vulnpryer.forklift import get_trl, modify_trl, post_trl
 
-# set default dates
+# set default parameters
 to_date = date.today()
 from_date = to_date + timedelta(days=-1)
+conf_file = "/etc/vulnpryer.conf"
 
 
 def mkdate(datestr):
@@ -90,6 +91,8 @@ parser.add_argument("-e", "--enddate", type=mkdate, default=to_date,
                     help="Start date.")
 parser.add_argument("-s", "--startdate", type=mkdate, default=from_date,
                     help="End date.")
+parser.add_argument("-f", "--config", type=str, default=conf_file,
+                    help="Start date.")
 parser.add_argument("-l", "--loglevel", default="info", help="Log level.")
 args = parser.parse_args()
 

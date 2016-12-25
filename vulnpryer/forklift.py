@@ -4,7 +4,7 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 # from builtins import *
 
-from configparser import ConfigParser
+from vulnpryer.config import read_config
 from lxml import objectify, etree
 import os
 import logging
@@ -18,8 +18,7 @@ from requests import request
 
 logger = logging.getLogger('vulnpryer.forklift')
 
-config = ConfigParser()
-config.read('/etc/vulnpryer.conf')
+config = read_config('/etc/vulnpryer.conf')
 
 trl_source_url = config.get('RedSeal', 'trl_url')
 username = config.get('RedSeal', 'username')

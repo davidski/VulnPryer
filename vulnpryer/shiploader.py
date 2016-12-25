@@ -5,8 +5,8 @@ from __future__ import (absolute_import, division,
 from future.utils import viewitems
 # from builtins import *
 
-from configparser import ConfigParser
-from pymongo import MongoClient
+from vulnpryer.config import read_config
+from pymongo import MongoClient, errors
 import csv
 import simplejson as json
 import sys

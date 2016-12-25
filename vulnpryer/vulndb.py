@@ -4,18 +4,17 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 # from builtins import *
 
+from vulnpryer.config import read_config
 from requests import request
 from requests_oauthlib import OAuth1 as oauth
 import simplejson as json
 from datetime import date, timedelta
 import logging
-from configparser import ConfigParser
 from builtins import str
 
 logger = logging.getLogger('vulnpryer.vulndb')
 
-config = ConfigParser()
-config.read('/etc/vulnpryer.conf')
+config = read_config('/etc/vulnpryer.conf')
 
 consumer_key = config.get('VulnDB', 'consumer_key')
 consumer_secret = config.get('VulnDB', 'consumer_secret')
@@ -57,7 +56,7 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
         resp = request(url=url, auth=auth)
         if resp.status_int == 404:
             logger.warning("Could not find anything for the week " +
-                           "begining: {}".format(from_date))
+                           "beginning: {}".format(from_date))
             return
         if resp.status_int != 200:
             raise Exception("Invalid response {}.".format(resp['status']))
@@ -84,7 +83,7 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
 
 
 def query_vulndb(from_date, to_date, day_interval=1):
-    """Query RBS's VulnDB for a chunk of data"""
+    """Query VulnDB for a chunk of data"""
 
     from dateutil.parser import parse
     import io
