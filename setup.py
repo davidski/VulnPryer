@@ -26,7 +26,7 @@ setup(
         "boto3 >= 1.4.0",
         "filechunkio >= 1.8.0",
         "lxml >= 3.7.1",
-        "pymongo >= 3.4.0",
+        "pymongo[tls] >= 3.4.0",
         "simplejson >= 3.10.0",
         "requests >= 2.12.0",
         "requests_oauthlib >= 0.7.0",

@@ -16,19 +16,22 @@ import os
 
 logger = logging.getLogger('vulnpryer.shiploader')
 
-
-config = ConfigParser()
-config.read('/etc/vulnpryer.conf')
-
-mongo_host = config.get('Mongo', 'hostname')
+config = read_config()
+mongo_uri = config.get('Mongo', 'uri')
 temp_directory = config.get('VulnDB', 'working_dir')
 json_directory = config.get('VulnDB', 'json_dir')
 
 # connect to our MongoDB instance
-client = MongoClient(host=mongo_host)
+logger.debug("Mongo uri is: {}".format(mongo_uri))
+client = MongoClient(mongo_uri)
 db = client.vulndb
 collection = db.osvdb
-
+try:
+    client.server_info()
+except errors.ServerSelectionTimeoutError as err:
+    logger.error("Failure connecting to Mongo at {}, {}"
+                 .format(mongo_uri, err))
+    raise
 
 def _decode_list(data):
     rv = []
@@ -174,19 +177,23 @@ def _run_aggregation():
 
 
 def _calculate_mean_cvss():
-    """Calcuate the mean CVSS score across all known vulnerabilities"""
-    results = db.osvdb.aggregate([
+    """Calculate the mean CVSS score across all known vulnerabilities"""
+    results = []
+    results_cursor = db.osvdb.aggregate([
         {"$unwind": "$cvss_metrics"},
         {"$group": {
             "_id": "null",
             "avgCVSS": {"$avg": "$cvss_metrics.calculated_cvss_base_score"}
         }}
     ])
+    for doc in results_cursor:
+        results.append(doc)
+
     logger.info("There are {} entries in this aggregation.".format(
-        len(results['result'])))
-    logger.debug("The headers are: {}".format(results['result'][0].keys()))
+        len(results)))
+    logger.debug("The headers are: {}".format(results[0].keys()))
     try:
-        avgCVSS = results['result'][0]['avgCVSS']
+        avgCVSS = results[0]['avgCVSS']
     except:
         avgCVSS = None
     return avgCVSS

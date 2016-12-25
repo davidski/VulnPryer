@@ -22,16 +22,25 @@ by default).
 Installation
 ============
 
-VulnPryer may be set up the manually or via several automated methods.
+VulnPryer may be set up the manually or via several automated methods. VulnPryer
+expects a static directory to use for storing vulnerability database files. While
+a MongoDB data store is used, the datastore is rebuilt each run and is effectively
+ephemeral between runs. The local datafile store, however, needs to be persistent.
 
 Manual Installation
 -------------------
 
-1. Setup an instance of MongoDB (authentication not currently supported)
+To set up VulnPryer on a persistent host:
+
+1. Setup an instance of MongoDB
 2. ``pip install vulnpryer``
 3. ``cp /etc/vulnpryer.conf{.sample,}``
-4. ``vi /etc/vulnpryer.conf`` #modify with your settings and credentials.
-5. Set up the daily schedule via ``vulnpryer schedule``
+4. Modify ``/etc/vulnpryer.conf`` with settings for your environment. Key settings include:
+  a. Mongo:URI = URI to your instance. Defaults to unauthenticated SSL with localhost
+  b. VulnDB API key
+  c. RedSeal support username and password
+  d. Datafile store (MUST BE PERSISTENT)
+5. Set up an automated daily import job by running ``vulnpryer schedule``
 
 Automated Installation
 ----------------------
@@ -48,7 +57,7 @@ Requirements
 ------------
 
 Python 2.7, 3.5, or 3.6
-MongoDB (tested with V3.4.1, V2 should also work)
+MongoDB (tested with v3.4.1, v2 should also work)
 
 Usage
 =====
