@@ -42,4 +42,3 @@ deploy:
     on:
       tags: true
       branch: dev
-      condition: $TRAVIS_PYTHON_VERSION = "3.6"
