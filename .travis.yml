@@ -17,7 +17,7 @@ before_script:
   - flake8 .
 
 script:
-  - nosetests
+  - nosetests --with-coverage --cover-package=VulnPryer
 
 before_deploy:
   - export RELEASE_PKG_FILE=$(ls dist/VulnPryer-*.zip)
