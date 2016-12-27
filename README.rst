@@ -1,4 +1,4 @@
-|Build Status| |PyPI Version|
+|Build Status| |PyPI Version| |Coverage Status|
 
 =========
 VulnPryer
@@ -124,3 +124,5 @@ VulnPryer would not exist without the inspiration and assistance of the followin
    :target: http://travis-ci.org/davidski/VulnPryer
 .. |PyPI Version| image:: https://img.shields.io/pypi/v/VulnPryer.svg
    :target:  https://pypi.python.org/pypi/pypi/VulnPryer
+.. image:: https://coveralls.io/repos/github/davidski/vulnpryr/badge.svg
+   :target: https://coveralls.io/github/davidski/vulnpryr

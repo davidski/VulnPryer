@@ -8,6 +8,7 @@ python:
 services: mongodb
 
 install:
+  - pip install coveralls
   - pip install flake8
   - pip install -r requirements.txt
 
@@ -15,7 +16,8 @@ before_script:
   - sleep 15
   - flake8 .
 
-script: nosetests
+script:
+  - nosetests
 
 before_deploy:
   - export RELEASE_PKG_FILE=$(ls dist/VulnPryer-*.zip)
