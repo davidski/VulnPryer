@@ -19,6 +19,9 @@ before_script:
 script:
   - nosetests --with-coverage --cover-package=vulnpryer
 
+after_success:
+  -  coveralls
+
 before_deploy:
   - export RELEASE_PKG_FILE=$(ls dist/VulnPryer-*.zip)
   - echo "Deploy target for GitHub is $RELEASE_PKG_FILE"
