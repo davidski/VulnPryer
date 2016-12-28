@@ -94,7 +94,7 @@ def load_mongo(json_glob_pattern):
                 filename, osvdb_id))
     logger.info("Mapping OSVDB entries to CVE IDs")
     _map_osvdb_to_cve()
-    logger.info("Marking deprecated VUulnDB entries")
+    logger.info("Marking deprecated VulnDB entries")
     _mark_deprecated_entries()
 
 
