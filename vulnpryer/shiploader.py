@@ -13,6 +13,7 @@ import sys
 import glob
 import logging
 import os
+from io import open
 
 logger = logging.getLogger('vulnpryer.shiploader')
 
@@ -72,7 +73,7 @@ def load_mongo(json_glob_pattern):
     logger.info("Looking for JSON files matching {}".format(path_to_json))
     for filename in sorted(glob.glob(path_to_json), key=os.path.getmtime):
         logger.info("Working on: {}".format(filename))
-        json_data = open(filename).read()
+        json_data = open(filename, 'rt').read()
         data = {}
         try:
             # auto-handling unicode object hook derived from
