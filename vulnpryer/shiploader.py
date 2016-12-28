@@ -200,26 +200,8 @@ def _calculate_mean_cvss():
     return avgCVSS
 
 
-class _DictUnicodeProxy(object):
-    """Create helper function for writing unicode to CSV"""
-
-    def __init__(self, d):
-        self.d = d
-
-    def __iter__(self):
-        return self.d.__iter__()
-
-    def get(self, item, default=None):
-        i = self.d.get(item, default)
-        if isinstance(i, list):
-            i = i[0]
-        if isinstance(i, str):
-            return i.encode('utf-8')
-        return i
-
-
 def _write_vulndb(results, filename):
-    """Dump output to CSV"""
+    """Write features to CSV"""
     if sys.version_info[0] < 3:
         csvfile = open(filename, 'wb')
     else:
@@ -232,7 +214,7 @@ def _write_vulndb(results, filename):
     csvwriter = csv.DictWriter(csvfile, fieldnames=headers)
     csvwriter.writeheader()
     for result in results:
-        csvwriter.writerow(_DictUnicodeProxy(result))
+        csvwriter.writerow(result)
 
     csvfile.close()
 
