@@ -228,4 +228,4 @@ def get_extract(extract_file):
 if __name__ == "__main__":
     """Read in all the json files"""
     load_mongo("data_*.json")
-    get_extract(temp_directory + 'vulndb_export.csv')
+    get_extract(os.path.join(temp_directory, 'vulndb_export.csv'))

@@ -14,7 +14,8 @@ import boto3
 import gzip
 import csv
 # from requests.auth import HTTPBasicAuth
-from requests import request
+from requests import get
+import sys
 
 logger = logging.getLogger('vulnpryer.forklift')
 
@@ -40,11 +41,16 @@ def _read_trl(trl_location):
 
 
 def get_trl(trl_path):
-    """Getch the TRL from RedSeal"""
+    """Fetch the TRL from RedSeal"""
 
-    result = request.get(trl_source_url, auth=(username, password))
+    result = get(trl_source_url, auth=(username, password))
 
-    with open(trl_path, "wb") as local_file:
+    if sys.version_info[0] < 3:
+        trl_file = open(trl_path, 'wb')
+    else:
+        trl_file = open(trl_path, 'w', newline='')
+
+    with trl_file as local_file:
         local_file.write(result.read())
         local_file.close()
 
@@ -53,7 +59,7 @@ def get_trl(trl_path):
 
 def _read_vulndb_extract():
     """read in the extracted VulnDB data"""
-    with open(temp_directory + 'vulndb_export.csv') as f:
+    with open(os.path.join(temp_directory, 'vulndb_export.csv')) as f:
         vulndb = csv.reader(f)
         for row in vulndb:
             yield(row)
@@ -143,7 +149,8 @@ def modify_trl(original_trl):
     trl_data = _read_trl(original_trl)
     modified_trl_data = _remap_trl(trl_data, vulndb)
 
-    new_trl_path = os.path.dirname(original_trl) + '/modified_trl.gz'
+    new_trl_path = os.path.join(os.path.dirname(original_trl),
+                                '/modified_trl.gz')
     _write_trl(modified_trl_data, new_trl_path)
     _fixup_trl(new_trl_path)
     return new_trl_path

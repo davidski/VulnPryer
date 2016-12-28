@@ -11,6 +11,7 @@ import simplejson as json
 from datetime import date, timedelta
 import logging
 from builtins import str
+import os
 
 logger = logging.getLogger('vulnpryer.vulndb')
 
@@ -103,8 +104,10 @@ def query_vulndb(from_date, to_date, day_interval=1):
 
         reply = _fetch_data(window_start, window_end, page_size)
 
-        with io.open(json_directory + 'data_' + window_start.strftime(
-                "%Y-%m-%d") + '.json', 'w', encoding='utf-8') as f:
+        with io.open(os.path.join(json_directory,
+                                  'data_' + window_start.strftime("%Y-%m-%d") +
+                                  '.json'),
+                     'w', encoding='utf-8') as f:
             f.write(json.dumps(reply, ensure_ascii=False))
             f.close
 
