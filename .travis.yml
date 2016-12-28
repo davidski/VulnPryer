@@ -1,49 +1,43 @@
 language: python
-
 python:
-  - '2.7'
-  - '3.5'
-  - '3.6'
-
+- '2.7'
+- '3.5'
+- '3.6'
 services: mongodb
-
 install:
-  - pip install coveralls
-  - pip install flake8
-  - pip install -r requirements.txt
-
+- pip install coveralls
+- pip install flake8
+- pip install -r requirements.txt
 before_script:
-  - sleep 15
-  - flake8 .
-
+- sleep 15
+- flake8 .
 script:
-  - nosetests --with-coverage --cover-package=vulnpryer
-
+- nosetests --with-coverage --cover-package=vulnpryer
 after_success:
-  -  coveralls
-
+- coveralls
 before_deploy:
-  - export RELEASE_PKG_FILE=$(ls dist/VulnPryer-*.zip)
-  - echo "Deploy target for GitHub is $RELEASE_PKG_FILE"
-
+- export RELEASE_PKG_FILE=$(ls dist/VulnPryer-*.zip)
+- echo "Deploy target for GitHub is $RELEASE_PKG_FILE"
 deploy:
-  - provider: releases
-    api_key:
-      secure: "K8TS3uWwydoqrQ+lQdZbCJ1A9V9BVAZKOn8G1P77cEhZOTLT4a4gPZp+vmQQF2YmJDJUyrd4gqQD8mnvY3aCdqldHHDS9CCCuUgSl7hSK4zDsD6VSuR3zCp6UDuUAWAxzQwmc2Xpeh+xqZfI4CD4IvUQ/bYwDTedRxRwziD90Mw="
-    file_glob: true
-    file: "dist/VulnPryer-*.zip"
-    skip_cleanup: true
-    on:
-      tags: true
-      condition: $TRAVIS_PYTHON_VERSION = "3.6"
-
-  - provider: pypi
-    server: https://testpypi.python.org/pypi
-    user: davidski
-    skip_cleanup: true
-    distributions: "sdist bdist_wheel"
-    password:
-      secure:  "UrMA+gNEn4qSKaEYk2r8/b3TDneRC5Tm2xHKVjUBRI3z5E+wECp3nccPC9KPgnDH0gn5qr5UIw9xaehRjod2KecC3qWAm2tzUnNaJYHppISv05cQVU681qbDtJpIsS+ECJJ57MuPcLNJkJYM4ZN+n1XbvQpCH6Bn0jrPoe7A/I0="
-    on:
-      tags: true
-      branch: dev
+- provider: releases
+  api_key:
+    secure: K8TS3uWwydoqrQ+lQdZbCJ1A9V9BVAZKOn8G1P77cEhZOTLT4a4gPZp+vmQQF2YmJDJUyrd4gqQD8mnvY3aCdqldHHDS9CCCuUgSl7hSK4zDsD6VSuR3zCp6UDuUAWAxzQwmc2Xpeh+xqZfI4CD4IvUQ/bYwDTedRxRwziD90Mw=
+  file_glob: true
+  file: dist/VulnPryer-*.zip
+  skip_cleanup: true
+  on:
+    tags: true
+    condition: $TRAVIS_PYTHON_VERSION = "3.6"
+- provider: pypi
+  server: https://testpypi.python.org/pypi
+  user: davidski
+  skip_cleanup: true
+  distributions: sdist bdist_wheel
+  password:
+    secure: UrMA+gNEn4qSKaEYk2r8/b3TDneRC5Tm2xHKVjUBRI3z5E+wECp3nccPC9KPgnDH0gn5qr5UIw9xaehRjod2KecC3qWAm2tzUnNaJYHppISv05cQVU681qbDtJpIsS+ECJJ57MuPcLNJkJYM4ZN+n1XbvQpCH6Bn0jrPoe7A/I0=
+  on:
+    tags: true
+    branch: dev
+notifications:
+  slack:
+    secure: JInQysMjcB6VzBWAo7dqxLtXnyimsjGLN060H7ewfMBwYkyr2WOfPATPEjNxPZXJ38lkjKfPoViLLxWFiJOySue0FuY75Nb1Fn8AUcJkou7itwaW9nSRqNOTdc0eTZZYlxSQwaV2bRTCxObFJHPSVMh2zLmvLryJSwJCvTFK1Zs=
