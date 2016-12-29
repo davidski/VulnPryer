@@ -39,15 +39,15 @@ deploy:
     tags: true
     branch: dev
 - provider: pypi
-   server: https://pypi.python.org/pypi
-   user: davidski
-   skip_cleanup: true
-   distributions: sdist bdist_wheel
-   password:
-     secure: pmA/v6ECxgZLM6vMfwGEZen+NeMXCINm/oDf2iTLszjJKZ6hp0ov13JxAOju5b4X1h+lTeYht+q++9qZo87dGwgnbJhQJztddLb1YsJCw+Ryk1FKdqiB9iQp/YF/HNtFjFgcCIEJ/S777QY57VyftoPBTC9biL5Q18udt/MUQWhjW4Y2PvVD7ykmSKzFUr0pJgA8wdaiSC13o/JQqKXDrEVVtKtDicVyvOVaHj6wfMnShVfbbhhGFIqvbVBHTGUsnXbq4ePviiftpblhVH5WzYbsn9v3e6vDAOvypsd/eD8DQqQ+B79rw0sY47Vziz9C3AwRRP+wliZdcZgLa5LrkBhamSraE5NhJIzd4Xzftul0PfQm/FSIaQ5DgUTOqFcec2wxcfB/04GMw+6Ixgf7dSfTmsmD/Qm7f5DcWVxBQzQA+Ybak/Anor+jY2CtB1PrTxlXGs2yq8AoE/GDn8wX3ztWAt60mGY6fN85spc7fiIz+1+gzYCofxcRIncBdOqgx38ulVWXgcZLtlq09MXZrZ1RWhhcLh912XBTyYhxF66EZ+VYm4FSbXtQ3knhR8JnD94ewW7Da7VRzEDxC+TsYXtW6/rlvlFkJ7PU0NcI2cd9jsqrHv3aK3AGp6lHSG6vtOZyQ+V+vELtOfKtj5fJgT3jmEOTw71h7lJb3Ha0P0I=
-   on:
-     tags: true
-     branch: master
+  server: https://pypi.python.org/pypi
+  user: davidski
+  skip_cleanup: true
+  distributions: sdist bdist_wheel
+  password:
+    secure: pmA/v6ECxgZLM6vMfwGEZen+NeMXCINm/oDf2iTLszjJKZ6hp0ov13JxAOju5b4X1h+lTeYht+q++9qZo87dGwgnbJhQJztddLb1YsJCw+Ryk1FKdqiB9iQp/YF/HNtFjFgcCIEJ/S777QY57VyftoPBTC9biL5Q18udt/MUQWhjW4Y2PvVD7ykmSKzFUr0pJgA8wdaiSC13o/JQqKXDrEVVtKtDicVyvOVaHj6wfMnShVfbbhhGFIqvbVBHTGUsnXbq4ePviiftpblhVH5WzYbsn9v3e6vDAOvypsd/eD8DQqQ+B79rw0sY47Vziz9C3AwRRP+wliZdcZgLa5LrkBhamSraE5NhJIzd4Xzftul0PfQm/FSIaQ5DgUTOqFcec2wxcfB/04GMw+6Ixgf7dSfTmsmD/Qm7f5DcWVxBQzQA+Ybak/Anor+jY2CtB1PrTxlXGs2yq8AoE/GDn8wX3ztWAt60mGY6fN85spc7fiIz+1+gzYCofxcRIncBdOqgx38ulVWXgcZLtlq09MXZrZ1RWhhcLh912XBTyYhxF66EZ+VYm4FSbXtQ3knhR8JnD94ewW7Da7VRzEDxC+TsYXtW6/rlvlFkJ7PU0NcI2cd9jsqrHv3aK3AGp6lHSG6vtOZyQ+V+vELtOfKtj5fJgT3jmEOTw71h7lJb3Ha0P0I=
+  on:
+    tags: true
+    branch: master
 notifications:
   slack:
     secure: JInQysMjcB6VzBWAo7dqxLtXnyimsjGLN060H7ewfMBwYkyr2WOfPATPEjNxPZXJ38lkjKfPoViLLxWFiJOySue0FuY75Nb1Fn8AUcJkou7itwaW9nSRqNOTdc0eTZZYlxSQwaV2bRTCxObFJHPSVMh2zLmvLryJSwJCvTFK1Zs=
