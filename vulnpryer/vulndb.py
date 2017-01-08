@@ -35,8 +35,10 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
 
     client = BackendApplicationClient(client_id=consumer_key)
     oauth = OAuth2Session(client=client)
-    token = oauth.fetch_token(token_url = request_token_url, client_id = consumer_key,
-                             client_secret = consumer_secret)
+    token = oauth.fetch_token(token_url=request_token_url,
+                              client_id=consumer_key,
+                              client_secret=consumer_secret)
+    logger.info("Token is {}".format(token))
 
     # initialize the page counter either at the first page or whatever page
     # was requested
