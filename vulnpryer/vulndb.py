@@ -5,11 +5,11 @@ from __future__ import (absolute_import, division,
 # from builtins import *
 
 from vulnpryer.config import read_config
-from requests import request
-from requests_oauthlib import OAuth1 as oauth
 import simplejson as json
 from datetime import date, timedelta
 import logging
+from requests_oauthlib import OAuth2Session
+from oauthlib.oauth2 import BackendApplicationClient
 from builtins import str
 import os
 
@@ -33,9 +33,10 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
 
     logger.info("Working on date range: {} - {}".format(from_date, to_date))
 
-    auth = oauth(consumer_key, consumer_secret,
-                 request_token_url)
-    # client = oauth2.Client(consumer)
+    client = BackendApplicationClient(client_id=consumer_key)
+    oauth = OAuth2Session(client=client)
+    token = oauth.fetch_token(token_url = request_token_url, client_id = consumer_key,
+                             client_secret = consumer_secret)
 
     # initialize the page counter either at the first page or whatever page
     # was requested
@@ -54,18 +55,18 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
               '&nested=true'
         logger.debug("Working on url: {} ".format(url))
 
-        resp = request(url=url, auth=auth)
-        if resp.status_int == 404:
+        resp = oauth.get(url)
+        if resp.status_code == 404:
             logger.warning("Could not find anything for the week " +
                            "beginning: {}".format(from_date))
             return
-        if resp.status_int != 200:
+        if resp.status_code != 200:
             raise Exception("Invalid response {}.".format(resp['status']))
 
-        logger.debug("\tHTTP Response code: " + str(resp.status_int))
+        logger.debug("\tHTTP Response code: " + str(resp.status_code))
 
         """parse response and append to working set"""
-        page_reply = json.loads(resp.body_string())
+        page_reply = json.loads(resp.content)
         logger.debug("Retrieving page {} of {}."
                      .format(page_counter,
                              -(-page_reply['total_entries'] // page_size)))
@@ -76,7 +77,7 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
             reply['total_entries'] = page_reply['total_entries']
         else:
             page_counter += 1
-        reply['results'].extend(page_reply['results'])
+            reply['results'].extend(page_reply['results'])
 
     logger.info("Returning {} out of {} results".format(str(len(
         reply['results'])), str(reply['total_entries'])))
