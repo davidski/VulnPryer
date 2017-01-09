@@ -182,8 +182,8 @@ def post_trl(file_path):
                                           policy='public-read')
     for i in range(chunk_count + 1):
         offset = chunk_size * i
-        bytes = min(chunk_size, source_size - offset)
-        with FileChunkIO(file_path, 'r', offset=offset, bytes=bytes) as fp:
+        byte_size = min(chunk_size, source_size - offset)
+        with FileChunkIO(file_path, 'r', offset=offset, bytes=byte_size) as fp:
             mp.upload_part_from_file(fp, part_num=i + 1)
     mp.complete_upload()
 
