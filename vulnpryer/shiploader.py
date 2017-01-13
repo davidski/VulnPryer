@@ -25,8 +25,8 @@ json_directory = config.get('VulnDB', 'json_dir')
 # connect to our MongoDB instance
 logger.debug("Mongo uri is: {}".format(mongo_uri))
 client = MongoClient(mongo_uri)
-db = client.vulndb
-collection = db.osvdb
+db = client.vulnpryer
+collection = db.vulndb
 try:
     client.server_info()
 except errors.ServerSelectionTimeoutError as err:
@@ -87,35 +87,35 @@ def load_mongo(json_glob_pattern):
             continue
         for vulndb in data['results']:
             logger.debug(json.dumps(vulndb, sort_keys=True, indent=4 * ' '))
-            vulndb['_id'] = vulndb['osvdb_id']
-            osvdb_id = collection.save(vulndb)
+            vulndb['_id'] = vulndb['vulndb_id']
+            vulndb_id = collection.save(vulndb)
             # osvdb_id = collection.insert(vulndb)
             logger.debug("Saved: {} with MongoDB id: {}".format(
-                filename, osvdb_id))
-    logger.info("Mapping OSVDB entries to CVE IDs")
-    _map_osvdb_to_cve()
+                filename, vulndb_id))
+    logger.info("Mapping VulnDB entries to CVE IDs")
+    _map_vulndb_to_cve()
     logger.info("Marking deprecated VulnDB entries")
     _mark_deprecated_entries()
 
 
-def _map_osvdb_to_cve():
-    """Add CVE_ID field to all OSVDB entries"""
-    results = db.osvdb.aggregate([
+def _map_vulndb_to_cve():
+    """Add CVE_ID field to all VulnDB entries"""
+    results = db.vulndb.aggregate([
         {"$unwind": "$ext_references"},
         {"$match": {"ext_references.type": "CVE ID"}},
         {"$project": {"CVE_ID": "$ext_references.value"}},
         {"$group": {"_id": "$_id", "CVE_ID": {"$addToSet": "$CVE_ID"}}}
     ])
     for entry in results:
-        db.osvdb.update({"_id": entry['_id']},
-                        {"$set": {"CVE_ID": entry['CVE_ID']}})
+        db.vulndb.update({"_id": entry['_id']},
+                         {"$set": {"CVE_ID": entry['CVE_ID']}})
         logger.info("Adding CVEs to {}".format(entry['_id']))
 
 
 def _mark_deprecated_entries():
     """Mark deprecated entries as such"""
     logger.info("Marking deprecated entries based on title.")
-    db.osvdb.update(
+    db.vulndb.update(
         {'title': {'$regex': '^DEPRECA'}},
         {'$set': {'deprecated': True}},
         upsert=False, multi=True
@@ -128,7 +128,7 @@ def _run_aggregation():
     alternate query based upon ext.references.type == 'CVE ID.'
     """
     results = []
-    result_cursor = db.osvdb.aggregate([
+    result_cursor = db.vulndb.aggregate([
         {"$unwind": "$CVE_ID"},
         {"$unwind": "$cvss_metrics"},
         {"$project": {"CVE_ID": 1, "ext_references": 1,
@@ -159,7 +159,7 @@ def _run_aggregation():
             "impact_confidential": {"$sum": {"$cond": [
                 {"$eq": ["$classifications.name",
                          "impact_confidential"]}, 1, 0]}}}},
-        {"$project": {"_id": 0, "OSVDB": "$_id._id",
+        {"$project": {"_id": 0, "VULNDB": "$_id._id",
                       "CVE_ID": "$_id.CVE_ID",
                       "public_exploit": 1, "private_exploit": 1,
                       "cvss_score": 1, "msp": 1, "edb": 1,
@@ -181,7 +181,7 @@ def _run_aggregation():
 def _calculate_mean_cvss():
     """Calculate the mean CVSS score across all known vulnerabilities"""
     results = []
-    results_cursor = db.osvdb.aggregate([
+    results_cursor = db.vulndb.aggregate([
         {"$unwind": "$cvss_metrics"},
         {"$group": {
             "_id": "null",
