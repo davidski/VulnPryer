@@ -48,10 +48,10 @@ def get_trl(trl_path):
     if sys.version_info[0] < 3:
         trl_file = open(trl_path, 'wb')
     else:
-        trl_file = open(trl_path, 'w', newline='')
+        trl_file = open(trl_path, 'wb')
 
     with trl_file as local_file:
-        local_file.write(result.read())
+        local_file.write(result.content)
         local_file.close()
 
     logger.info('Downloaded TRL from RedSeal')
