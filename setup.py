@@ -66,6 +66,7 @@ setup(
         "filechunkio >= 1.8.0",
         "future >= 0.16.0",
         "lxml >= 3.7.1",
+        "pandas >= 0.19.2",
         "pymongo[tls] >= 3.4.0",
         "python-crontab >= 2.1.1",
         "python-dateutil >= 2.6.0",

@@ -15,6 +15,7 @@ import gzip
 import csv
 # from requests.auth import HTTPBasicAuth
 from requests import get
+import pandas as pd
 import sys
 
 logger = logging.getLogger('vulnpryer.forklift')
@@ -59,10 +60,8 @@ def get_trl(trl_path):
 
 def _read_vulndb_extract():
     """read in the extracted VulnDB data"""
-    with open(os.path.join(temp_directory, 'vulndb_export.csv')) as f:
-        vulndb = csv.reader(f)
-        for row in vulndb:
-            yield(row)
+    vulndb = pd.read_csv(os.path.join(temp_directory, 'vulndb_export.csv'), index_col='CVE_ID')
+    return vulndb
 
 
 def _remap_trl(trl_data, vulndb):
@@ -77,37 +76,39 @@ def _remap_trl(trl_data, vulndb):
 
     for vulnerability in trl_data.vulnerabilities.vulnerability:
 
-        logger.debug('Adjusting priority of {}'.format(
-            vulnerability.get('cveID')))
+        vuln_id = vulnerability.get('cveID')
+        logger.debug('Adjusting priority of {}'.format(vuln_id))
 
         # start off with the NVD definition
         modified_score = float(vulnerability.get('CVSSTemporalScore'))
+
         # add deviation from mean
         modified_score = modified_score + (modified_score -
                                            avg_cvss_score) / avg_cvss_score
-        # adjust up if metasploit module exists
-        if vulndb[vulndb['CVE_ID'] == vulnerability.get('cveID')].msp.any >= 1:
-            modified_score = modified_score + msp_factor
-        # adjust up if exploit DB entry exists
-        if vulndb[vulndb['CVE_ID'] == vulnerability.get('cveID')].edb.any >= 1:
-            modified_score = modified_score + edb_factor
-        # adjust up if a private exploit is known
-        if vulndb[vulndb['CVE_ID'] == vulnerability.get('cveID')]\
-                .private_exploit.any >= 1:
-                modified_score = modified_score + private_exploit_factor
+
+        # apply additional modifications if we have information on this vulnerability
+        if vuln_id in vulndb.index:
+            # adjust up if metasploit module exists
+            if vulndb.ix[vuln_id].msp.any() >= 1:
+                modified_score = modified_score + msp_factor
+            # adjust up if exploit DB entry exists
+            if vulndb.ix[vuln_id].edb.any() >= 1:
+                modified_score = modified_score + edb_factor
+            # adjust up if a private exploit is known
+            if vulndb.ix[vuln_id].private_exploit.any() >= 1:
+                    modified_score = modified_score + private_exploit_factor
+            else:
+                modified_score = modified_score - private_exploit_factor
+            # adjust down for impacts that aren't relevant to our loss scenario
+            if (vulndb.ix[vuln_id].impact_integrity.any() < 1 and
+                    vulndb.ix[vuln_id].impact_confidentiality.any() < 1):
+                modified_score = modified_score - impact_factor
+            # adjust down for attack vectors that aren't in our loss scenario
+            if vulndb.ix[vuln_id].network_vector.any() < 1:
+                modified_score = modified_score - network_vector_factor
         else:
-            modified_score = modified_score - private_exploit_factor
-        # adjust down for impacts that aren't relevant to our loss scenario
-        if (vulndb[vulndb['CVE_ID'] ==
-            vulnerability.get('cveID')].impact_integrity.any < 1 and
-                vulndb[vulndb['CVE_ID'] ==
-                       vulnerability.get('cveID')]
-                .impact_confidentiality.any < 1):
-            modified_score = modified_score - impact_factor
-        # adjust down for attack vectors that aren't in our loss scenario
-        if vulndb[vulndb['CVE_ID'] ==
-                  vulnerability.get('cveID')].network_vector.any < 1:
-            modified_score = modified_score - network_vector_factor
+            logger.debug("No feature information for {}".format(vuln_id))
+
         # confirm that our modified score is within max/min limits
         if modified_score > 10:
             modified_score = 10
@@ -132,7 +133,7 @@ def _fixup_trl(modified_trl_path):
     """Fix attribute order for trl node which RS 7.x is particular about"""
     temp_file = tempfile.NamedTemporaryFile(delete=False)
     output_file = gzip.open(temp_file.name, "wb")
-    reg_expression = '^<trl (.+) (publishedOn=\".+?\" version=\".+?\")>$'
+    reg_expression = b'^<trl (.+) (publishedOn=\".+?\" version=\".+?\")>$'
     reg_expression = re.compile(reg_expression)
     fh = gzip.open(modified_trl_path, "rb")
     for line in fh:
@@ -150,7 +151,7 @@ def modify_trl(original_trl):
     modified_trl_data = _remap_trl(trl_data, vulndb)
 
     new_trl_path = os.path.join(os.path.dirname(original_trl),
-                                '/modified_trl.gz')
+                                'modified_trl.gz')
     _write_trl(modified_trl_data, new_trl_path)
     _fixup_trl(new_trl_path)
     return new_trl_path
