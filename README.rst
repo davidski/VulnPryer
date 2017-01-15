@@ -4,13 +4,15 @@
 VulnPryer
 =========
 
+|VulnPryer Logo|
+
 Vulnerability Pryer - Prying context into your vulnerability data.
 
 Description
 ===========
 
 VulnPryer is the code behind a `vulnerability re-prioritization project
-<http://blog.severski.net/2014/08/introducing-vulnpryer.html>`__. With a goal of identifying the vulnerabilities
+<http://blog.severski.net/2014/08/introducing-vulnpryer.html>`__. With the goal of identifying the vulnerabilities
 that are most crucial to address inside an enterprise, VulnPryer adjusts the priorities (CVSS scores) on publicly
 identified vulnerabilities.
 
@@ -46,7 +48,11 @@ To set up VulnPryer on a persistent host:
   d. Datafile store (MUST BE PERSISTENT)
   e. S3 bucket location (will use EC2 instance profile if no IAM keys provided)
 
-5. Set up an automated daily import job by running ``vulnpryer schedule``
+5. Run a one time backload process via ``vulnpryer backload`` to import the VulnDB history to your local system.
+   Note: This process will consume a large number of API calls and a significant amount of
+     time for the first run (approximately 2.5-3 hours). This only needs to be run once to populate
+     your local data store.
+6. Set up an automated daily import job by running ``vulnpryer schedule``
 
 Automated Installation
 ----------------------
@@ -131,5 +137,6 @@ VulnPryer would not exist without the inspiration and assistance of the followin
    :target: http://travis-ci.org/davidski/VulnPryer
 .. |PyPI Version| image:: https://img.shields.io/pypi/v/VulnPryer.svg
    :target:  https://pypi.python.org/pypi/pypi/VulnPryer
-.. |Coverage Status| image:: https://coveralls.io/repos/github/davidski/vulnpryr/badge.svg
+.. |Coverage Status| image:: https://coveralls.io/repos/github/davidski/VulnPryer/badge.svg
    :target: https://coveralls.io/github/davidski/vulnpryr
+.. |VulnPryer Logo| image:: img/VulnPryer%20logo.jpg

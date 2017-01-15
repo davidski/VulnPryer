@@ -11,7 +11,7 @@ import sys
 from crontab import CronTab
 
 # VulnDB components
-from vulnpryer.vulndb import query_vulndb
+from vulnpryer.vulndb import query_vulndb, backload_vulndb
 from vulnpryer.shiploader import load_mongo, get_extract
 from vulnpryer.forklift import get_trl, modify_trl, post_trl
 
@@ -24,10 +24,9 @@ conf_file = "/etc/vulnpryer.conf"
 def mkdate(datestr):
     """Coerce arguments into date type"""
     if not isinstance(datestr, date):
-        return parse(datestr)
+        return parse(datestr).date()
     else:
         return datestr
-
 
 
 def schedule():
@@ -47,6 +46,12 @@ def unschedule():
     user_cron.remove_all(comment='VulnPryer load')
     user_cron.write()
     logger.info("VulnPryer removed from user crontab")
+
+
+def backload():
+    """"Get historical VulnDB for initial load"""
+    backload_vulndb()
+    logger.info("VulnDB historical data pulled")
 
 
 def process():
@@ -86,7 +91,7 @@ def process():
 
 parser = argparse.ArgumentParser()
 parser.add_argument("command", default="daily", nargs="?",
-                    help="Command to execute (schedule|unschedule|daily).")
+                    help="Command to execute (schedule|unschedule|daily|backload).")
 parser.add_argument("-e", "--enddate", type=mkdate, default=to_date,
                     help="Start date.")
 parser.add_argument("-s", "--startdate", type=mkdate, default=from_date,
@@ -112,6 +117,8 @@ elif args.command == "unschedule":
     unschedule()
 elif args.command == "daily":
     process()
+elif args.command == "backload":
+    backload()
 else:
     print("Invalid command option: {}".format(args.command))
     raise

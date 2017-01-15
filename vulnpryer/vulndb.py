@@ -11,6 +11,8 @@ import logging
 from requests_oauthlib import OAuth2Session
 from oauthlib.oauth2 import BackendApplicationClient
 from builtins import str
+from dateutil.parser import parse
+import io
 import os
 
 logger = logging.getLogger('vulnpryer.vulndb')
@@ -59,8 +61,8 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
 
         resp = oauth.get(url)
         if resp.status_code == 404:
-            logger.warning("Could not find anything for the week " +
-                           "beginning: {}".format(from_date))
+            logger.warning("Could not find anything for the period " +
+                           "{} - {}".format(from_date, to_date))
             return
         if resp.status_code != 200:
             raise Exception("Invalid response {}.".format(resp['status']))
@@ -89,14 +91,11 @@ def _fetch_data(from_date, to_date, page_size=20, first_page=1):
 def query_vulndb(from_date, to_date, day_interval=1):
     """Query VulnDB for a chunk of data"""
 
-    from dateutil.parser import parse
-    import io
-
     if not isinstance(from_date, date):
-        from_date = parse(from_date)
+        from_date = parse(from_date).date()
 
     if not isinstance(to_date, date):
-        to_date = parse(to_date)
+        to_date = parse(to_date).date()
 
     current_date = from_date
 
@@ -113,6 +112,12 @@ def query_vulndb(from_date, to_date, day_interval=1):
                      'w', encoding='utf-8') as f:
             f.write(json.dumps(reply, ensure_ascii=False))
             f.close
+
+
+def backload_vulndb(start_date="2008-01-01", day_interval=7):
+    """Backload VulnDB with historical data"""
+
+    query_vulndb(start_date, date.today(), day_interval)
 
 
 if __name__ == "__main__":
