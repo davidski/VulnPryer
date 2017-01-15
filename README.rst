@@ -72,7 +72,7 @@ Requirements
 ------------
 
 Platforms: Unix host (Windows may work, on an experimental basis)
-Data store: MongoDB (tested with v3.4.1, v2 should also work)
+Data store: MongoDB (tested with v3.4.1)
 Interpreter: Python 2.7, 3.5, or 3.6
 
 Usage
@@ -116,6 +116,9 @@ The core members of the VulnPryer project are:
 
 Sponsorship
 ===========
+
+`RedSeal <https://www.redsealnetworks.com/>`__ has supported development of the VulnPryer project, providing technical
+assistance with the RedSeal TRL interface.
 
 `Risk Based Security <https://www.riskbasedsecurity.com/>`__ has generously supported continued development of the
 VulnPryer project, providing technical assistance with the VulnDB interface.
