@@ -12,11 +12,12 @@ import tempfile
 import re
 import boto3
 import gzip
-import csv
 # from requests.auth import HTTPBasicAuth
 from requests import get
 import pandas as pd
 import sys
+# from filechunkio import FileChunkIO
+# import math
 
 logger = logging.getLogger('vulnpryer.forklift')
 
@@ -60,7 +61,9 @@ def get_trl(trl_path):
 
 def _read_vulndb_extract():
     """read in the extracted VulnDB data"""
-    vulndb = pd.read_csv(os.path.join(temp_directory, 'vulndb_export.csv'), index_col='CVE_ID')
+    vulndb = pd.read_csv(os.path.join(temp_directory,
+                                      'vulndb_export.csv'),
+                         index_col='CVE_ID')
     return vulndb
 
 
@@ -86,7 +89,8 @@ def _remap_trl(trl_data, vulndb):
         modified_score = modified_score + (modified_score -
                                            avg_cvss_score) / avg_cvss_score
 
-        # apply additional modifications if we have information on this vulnerability
+        # apply additional modifications
+        # if we have information on this vulnerability
         if vuln_id in vulndb.index:
             # adjust up if metasploit module exists
             if vulndb.ix[vuln_id].msp.any() >= 1:
@@ -123,6 +127,7 @@ def _remap_trl(trl_data, vulndb):
 def _write_trl(trl_data, modified_trl_path):
     """Write the modified trl out to disk"""
     # etree.cleanup_namespaces(trl)
+    logger.info("Writing TRL to storage")
     obj_xml = etree.tostring(trl_data, xml_declaration=True,
                              pretty_print=True, encoding='UTF-8')
     with gzip.open(modified_trl_path, "wb") as f:
@@ -131,13 +136,14 @@ def _write_trl(trl_data, modified_trl_path):
 
 def _fixup_trl(modified_trl_path):
     """Fix attribute order for trl node which RS 7.x is particular about"""
+    logger.info("Fixing up TRL")
     temp_file = tempfile.NamedTemporaryFile(delete=False)
-    output_file = gzip.open(temp_file.name, "wb")
+    output_file = gzip.open(temp_file.name, "w")
     reg_expression = b'^<trl (.+) (publishedOn=\".+?\" version=\".+?\")>$'
     reg_expression = re.compile(reg_expression)
-    fh = gzip.open(modified_trl_path, "rb")
+    fh = gzip.open(modified_trl_path, "r")
     for line in fh:
-        line = re.sub(reg_expression, r'<trl \2 \1>', line)
+        line = re.sub(reg_expression, b'<trl \2 \1>', line)
         output_file.write(line)
     fh.close()
     output_file.close()
@@ -145,7 +151,8 @@ def _fixup_trl(modified_trl_path):
 
 
 def modify_trl(original_trl):
-    """public full trl modification script"""
+    """TRL modification"""
+    logger.info("Modifying TRL")
     vulndb = _read_vulndb_extract()
     trl_data = _read_trl(original_trl)
     modified_trl_data = _remap_trl(trl_data, vulndb)
@@ -160,44 +167,52 @@ def modify_trl(original_trl):
 def post_trl(file_path):
     """store the TRL to S3"""
 
-    from filechunkio import FileChunkIO
-    import math
-    import os
-    conn = boto3.resource('s3')
-
-    bucket = conn.Bucket(s3_bucket, validate=False)
+    conn = boto3.resource('s3', region_name=s3_region)
 
     logger.info('Uploading {} to Amazon S3 bucket {}'.format(
         file_path, s3_bucket))
-
-    import sys
 
     def percent_cb(complete, total):
         sys.stdout.write('.')
         sys.stdout.flush()
 
+    conn.meta.client.upload_file(file_path,
+                                 s3_bucket, s3_key,
+                                 {'ServerSideEncryption': 'AES256',
+                                  'ACL': 'public-read'})
+
+    """
     source_size = os.stat(file_path).st_size
     chunk_size = 10000000
     chunk_count = int(math.ceil(source_size / chunk_size))
-    mp = bucket.initiate_multipart_upload(s3_key, encrypt_key=True,
-                                          policy='public-read')
+    mp = conn.create_multipart_upload(Bucket=s3_bucket, Key=s3_key,
+                                      ServerSideEncryption='AES256')
+    #                                  ACL='public-read')
+    part_info = {
+        'Parts': [
+        ]
+    }
     for i in range(chunk_count + 1):
         offset = chunk_size * i
         byte_size = min(chunk_size, source_size - offset)
-        with FileChunkIO(file_path, 'r', offset=offset, bytes=byte_size) as fp:
-            mp.upload_part_from_file(fp, part_num=i + 1)
-    mp.complete_upload()
+        with FileChunkIO(file_path, offset=offset, bytes=byte_size) as fp:
+            part_number = i + 1
+            data = fp.read()
+            part = conn.upload_part(Bucket=s3_bucket, Key=s3_key,
+                                    Body=data, PartNumber=part_number,
+                                    UploadId=mp['UploadId'])
+            part_data = {'PartNumber': part_number,
+                         'ETag': part['ETag']}
+            part_info['Parts'].append(part_data)
 
-    # old single part upload not used due to bug in boto with continuation
-    # headers
-    # from boto.s3.key import Key
-    # k = Key(bucket)
-    # k.key = key_name
-    # k.set_contents_from_filename(file_path, cb=percent_cb, num_cb=10,
-    #   encrypt_key=True, policy='public-read')
+    conn.complete_multipart_upload(Bucket=s3_bucket, Key=s3_key,
+                                   UploadId=mp['UploadId'],
+                                   MultipartUpload=part_info)
+    """
 
     return
 
 
 if __name__ == "__main__":
-    modify_trl('/tmp/trl.gz')
+    new_trl = modify_trl('/tmp/trl.gz')
+    print("Modified TRL available at {}".format(new_trl))
