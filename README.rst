@@ -41,15 +41,19 @@ To set up VulnPryer on a persistent host:
 2. ``pip install vulnpryer``
 3. ``cp /etc/vulnpryer.conf{.sample,}``
 4. Modify ``/etc/vulnpryer.conf`` with settings for your environment. Key settings include:
+
    a. Mongo:URI = URI to your instance. Defaults to unauthenticated SSL with localhost
    b. VulnDB API key
    c. RedSeal support username and password
    d. Datafile store (MUST BE PERSISTENT)
    e. S3 bucket location (will use EC2 instance profile if no IAM keys provided)
+
 5. Run a one time backload process via ``vulnpryer backload`` to import the VulnDB history to your local system.
+
      Note: This process will consume a large number of API calls and a significant amount of
      time for the first run (approximately 2.5-3 hours). This only needs to be run once to populate
      your local data store.
+
 6. Set up an automated daily import job by running ``vulnpryer schedule``
 
 Automated Installation
