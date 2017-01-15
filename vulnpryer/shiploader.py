@@ -109,7 +109,7 @@ def _map_vulndb_to_cve():
     for entry in results:
         db.vulndb.update({"_id": entry['_id']},
                          {"$set": {"CVE_ID": entry['CVE_ID']}})
-        logger.info("Adding CVEs to {}".format(entry['_id']))
+        logger.debug("Adding CVEs to {}".format(entry['_id']))
 
 
 def _mark_deprecated_entries():
