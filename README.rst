@@ -50,8 +50,8 @@ To set up VulnPryer on a persistent host:
 
 5. Run a one time backload process via ``vulnpryer backload`` to import the VulnDB history to your local system.
 
-     Note: This process will consume a large number of API calls and a significant amount of
-     time for the first run (approximately 2.5-3 hours). This only needs to be run once to populate
+     Note: The backload process consumes a large number of API calls and a significant amount of
+     time (approximately two and half to three hours). This only needs to be run once to populate
      your local data store.
 
 6. Set up an automated daily import job by running ``vulnpryer schedule``
