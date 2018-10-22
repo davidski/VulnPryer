@@ -5,14 +5,16 @@ VulnPryer
 
 Vulnerability Pryer - Pries more context into your vulnerability data.
 
-#Description
+# Description
+
 VulnPryer is the code behind a [vulnerability reprioritization project](http://blog.severski.net/2014/08/introducing-vulnpryer.html). 
 Using a vulnerability data feed (VulnPryer uses the VulnDB commercial project by default), VulnPryer will 
 download that feed on an incremental basis, load the feed into MongoDB for storage, extract a 
 mapping of features, and provide a remapping of vulnerabilities to custom severities for importing 
 into your analysis product of choice (VulnPryer targets the [RedSeal](https://www.redsealnetworks.com/) platform by default).
 
-#Installation
+# Installation
+
 VulnPryer may be set up the hard (manual) way and the easy (automated) way.
 
 ## Manual Installation
@@ -27,7 +29,8 @@ VulnPryer may be set up the hard (manual) way and the easy (automated) way.
 1. Use the [chef-vulnpryer](https://github.com/SCH-CISM/chef-vulnpryer) cookbook to set up a full stack with all your dependencies resolved.
 2. Profit!
 
-#Usage
+# Usage
+
 VulnPryer targets running daily extracts out of VulnDB and generating updated RedSeal Threat 
 Reference Library files with modified CVSS ratings on an Amazon S3 bucket. This is accomplished 
 via the `vulndb` module for working with the VulnDB API, the `shiploader` module for loading that 
@@ -42,9 +45,10 @@ you can run the individual compoents manually:
   2. shiploader.py
   3. forklift.py
 
-#Dependencies
+# Dependencies
 VulnPryer relies on the following third-party libraries. Note that newer versions of these libraries may be available, but have not been tested.
 
+```
 argparse >= 1.2.1   [http://code.google.com/p/argparse/ - Now part of Python, version 2.7, 3.2, or higher] 
 boto >= 2.32.1      [https://github.com/boto/boto] 
 filechunkio >= 1.5  [https://bitbucket.org/fabian/filechunkio] 
@@ -54,18 +58,20 @@ pandas >= 0.13.1    [http://pandas.pydata.org/]
 pymongo >= 2.7.2    [http://api.mongodb.org/python/current/] 
 restkit >= 4.2.2    [http://restkit.org/] 
 simplejson >= 3.6.2 [https://pypi.python.org/pypi/simplejson/]
+```
 
-#Acknowledgements
+# Acknowledgements
 VulnPryer would not exist without the inspiration and assistance of the following individuals 
 and organizations:
+
 - [@alexcpsec](https://twitter.com/alexcpsec) and 
-[@kylemaxwell](https://twitter.com/alexcpsec) for the 
-[combine](https://github.com/mlsecproject/combine) project. VulnPryer has cribbed heavily from 
-that design pattern, including a crude aping of naming metaphors. :grin:
+  [@kylemaxwell](https://twitter.com/alexcpsec) for the 
+  [combine](https://github.com/mlsecproject/combine) project. VulnPryer has cribbed heavily from 
+  that design pattern, including a crude aping of naming metaphors. :grin:
 - [Risk Based Security](https://vulndb.cyberriskanalytics.com/) (RBS) 
-for providing the VulnDB product and for the support in getting this project 
-off the ground.
+  for providing the VulnDB product and for the support in getting this project 
+  off the ground.
 - [Risk I/O](https://www.risk.io/) for providing the inspiration 
-on this project and their continued support of the community.
+  on this project and their continued support of the community.
 - [RedSeal](https://www.redsealnetworks.com) for providing the analysis platform for network 
-security posture review and analysis.
+  security posture review and analysis.
